@@ -348,7 +348,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                     {/* Side Image CTA */}
                     <div className="col-span-2 lg:col-span-4 relative overflow-hidden border border-white/10 min-h-[200px] lg:min-h-[280px]">
                       <img
-                        src="https://vrfacwizigigcpowkrye.supabase.co/storage/v1/object/public/trophy/Silver%20and%20Gold%20Trophy%20Under%20Stadium%20Lights.png"
+                        src="/banner3.png"
                         alt=""
                         aria-hidden="true"
                         referrerPolicy="no-referrer"

@@ -35,6 +35,31 @@ const BANNER_SLIDES: BannerSlide[] = [
       'https://vrfacwizigigcpowkrye.supabase.co/storage/v1/object/public/trophy/tr2M.png',
     alt: 'Championship Trophy Lights',
   },
+   {
+    id: 'slide-4',
+    image:
+      'https://ddbmiixykqommytdhyny.supabase.co/storage/v1/object/sign/Trophy/WOODEN%20MEMENTO%20SERIES%20web.png?token=eyJraWQiOiI3ZjkzNTk5ZS1mNGQ2LTQxMjYtYjkyNi0yZjVmMGE4NGM3MTQiLCJhbGciOiJIUzUxMiJ9.eyJ1cmwiOiJUcm9waHkvV09PREVOIE1FTUVOVE8gU0VSSUVTIHdlYi5wbmciLCJzY29wZSI6ImRvd25sb2FkIiwiaWF0IjoxNzkzNjg1NzM5LCJleHAiOjE4NTY3NTc3Mzl9.HVSFZ05H41XYCNngJOXLf3Lj0ykEWpUeFOprA3fdGYZdISW5d5H4F6DXTGC8K4YRVw_iecNpbv7Ph78rRkbM4Q',
+    mobileImage:
+      'https://ddbmiixykqommytdhyny.supabase.co/storage/v1/object/sign/Trophy/WOODEN%20MEMENTO%20SERIES%20mobile.png?token=eyJraWQiOiI3ZjkzNTk5ZS1mNGQ2LTQxMjYtYjkyNi0yZjVmMGE4NGM3MTQiLCJhbGciOiJIUzUxMiJ9.eyJ1cmwiOiJUcm9waHkvV09PREVOIE1FTUVOVE8gU0VSSUVTIG1vYmlsZS5wbmciLCJzY29wZSI6ImRvd25sb2FkIiwiaWF0IjoxNzkzNjg1NzgzLCJleHAiOjE4NTY3NTc3ODN9.Jasnyb9wyZQq8AFr_N3xqVPATeeFQqnI_2hqp5PNJZZGCs5kTV_YFiS5XGvk_O1biAwHF_W_06q3dE0tBIBT7A',
+    alt: 'Championship Trophy Lights',
+  },
+  {
+    id: 'slide-5',
+    image:
+      'https://ddbmiixykqommytdhyny.supabase.co/storage/v1/object/sign/Trophy/MEDALS%20AND%20BADGES%20web.png?token=eyJraWQiOiI3ZjkzNTk5ZS1mNGQ2LTQxMjYtYjkyNi0yZjVmMGE4NGM3MTQiLCJhbGciOiJIUzUxMiJ9.eyJ1cmwiOiJUcm9waHkvTUVEQUxTIEFORCBCQURHRVMgd2ViLnBuZyIsInNjb3BlIjoiZG93bmxvYWQiLCJpYXQiOjE3OTM2ODU4MjAsImV4cCI6MTg1Njc1NzgyMH0.4ZI8CdS0tXAmXV_ZsY7xaaqY8QB4UCKIpKpHVNXDhrRCvGcue2wG_IjHyg9LpMn2nkSdqnGO_XArl78UOAvQDQ',
+    mobileImage:
+      'https://ddbmiixykqommytdhyny.supabase.co/storage/v1/object/sign/Trophy/MEDALS%20AND%20BADGES%20mobile.png?token=eyJraWQiOiI3ZjkzNTk5ZS1mNGQ2LTQxMjYtYjkyNi0yZjVmMGE4NGM3MTQiLCJhbGciOiJIUzUxMiJ9.eyJ1cmwiOiJUcm9waHkvTUVEQUxTIEFORCBCQURHRVMgbW9iaWxlLnBuZyIsInNjb3BlIjoiZG93bmxvYWQiLCJpYXQiOjE3OTM2ODU4NTAsImV4cCI6MTg1Njc1Nzg1MH0.OUsVXDUtow1d8fHnFzGY4GDI8Su2u5JAnBN_EofIbVa9ph5eghaaxi4q-qWohLcdlUS_0wkWDLkZy8uZYoA2mg',
+    alt: 'Championship Trophy Lights',
+  },
+ 
+  {
+    id: 'slide-6',
+    image:
+      'https://ddbmiixykqommytdhyny.supabase.co/storage/v1/object/sign/Trophy/BULK%20ORDER%20web.png?token=eyJraWQiOiI3ZjkzNTk5ZS1mNGQ2LTQxMjYtYjkyNi0yZjVmMGE4NGM3MTQiLCJhbGciOiJIUzUxMiJ9.eyJ1cmwiOiJUcm9waHkvQlVMSyBPUkRFUiB3ZWIucG5nIiwic2NvcGUiOiJkb3dubG9hZCIsImlhdCI6MTc5MzY4NTg4NCwiZXhwIjoxODU2NzU3ODg0fQ.0cZff1Un_MC1bdehrERr3fb3_o-mBzLzWtvziIogGOLev2QAxHypsZkmExknP3Ht2_cC26lMEQrqfHTKBMrN5Q',
+    mobileImage:
+      'https://ddbmiixykqommytdhyny.supabase.co/storage/v1/object/sign/Trophy/BULK%20ORDER%20mobile.png?token=eyJraWQiOiI3ZjkzNTk5ZS1mNGQ2LTQxMjYtYjkyNi0yZjVmMGE4NGM3MTQiLCJhbGciOiJIUzUxMiJ9.eyJ1cmwiOiJUcm9waHkvQlVMSyBPUkRFUiBtb2JpbGUucG5nIiwic2NvcGUiOiJkb3dubG9hZCIsImlhdCI6MTc5MzY4NTk0OCwiZXhwIjoxODU2NzU3OTQ4fQ.n13QsnHci1IsLS8qCwm9WAWiN_2NBOIpjTTOb2D4jftFgcSLO_iE_QVOxcgWKpehJq_OAckvYPlqHp3y1WcZZg',
+    alt: 'Championship Trophy Lights',
+  },
 ];
 
 interface HeroProps {

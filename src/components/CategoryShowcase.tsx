@@ -16,40 +16,33 @@ const TROPHY_PATH = '/trophis/';
 
 const categories: CategoryItem[] = [
   {
-    id: 'crystal',
-    title: 'Crystal Trophies',
-    image: `${TROPHY_PATH}Haven-Star-1031-G-1-3-scaled-removebg-preview.png`,
-    fit: 'contain'
+    id: 'fibre',
+    title: 'Fibre Trophy',
+    image: `/cats/cat1.png`,
+    fit: 'cover'
   },
   {
-    id: 'sculpted-gold',
-    title: 'Gold Cups',
-    image: `${TROPHY_PATH}Zenith-Star-1022-AG-1-3-scaled-removebg-preview.png`,
-    fit: 'contain'
+    id: 'metal',
+    title: 'Metal Corporate Awards',
+    image: `/cats/cat2.png`,
+    fit: 'cover'
   },
   {
-    id: 'plaques',
-    title: 'Plaques & Mementos',
-    image: `${TROPHY_PATH}Kite-Star-1011-L-4-scaled-removebg-preview.png`,
-    fit: 'contain'
+    id: 'Wooden',
+    title: 'Wooden Memento',
+    image: `/cats/cat3.png`,
+    fit: 'cover'
   },
   {
-    id: 'medals',
-    title: 'Championship Medals',
-    image: `${TROPHY_PATH}Calvin-Star-1035-G-1-3-scaled-removebg-preview.png`,
-    fit: 'contain'
+    id: 'Medals',
+    title: 'Medals',
+    image: `/cats/cat4.png`,
+    fit: 'cover'
   },
   {
-    id: 'bespoke',
-    title: 'Bespoke Awards',
-    image: `${TROPHY_PATH}Fresco-Star-1007-L-1-1-scaled-removebg-preview.png`,
-    fit: 'contain'
-  },
-  {
-    id: 'all',
-    title: 'All Trophies',
-    image:
-      'https://bombaytrophies.co.in/wp-content/uploads/2026/03/Custom-Glass-Trophies.webp',
+    id: 'Badges',
+    title: 'Badges',
+   image: `/cats/cat5.png`,
     fit: 'cover'
   }
 ];

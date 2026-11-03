@@ -3,7 +3,7 @@ import { TrophyProduct } from '../types/trophy';
 export const TROPHY_PRODUCTS: TrophyProduct[] = [
   {
     id: 'tm-cryst-01',
-    name: 'The Sovereign Diamond Obelisk',
+    name: 'Calvin Star',
     category: 'crystal',
     categoryLabel: 'Optical Crystal',
     price: 3450,
@@ -36,7 +36,7 @@ export const TROPHY_PRODUCTS: TrophyProduct[] = [
   },
   {
     id: 'tm-gold-02',
-    name: 'The Imperator Championship Chalice',
+    name: 'Haven Star',
     category: 'sculpted-gold',
     categoryLabel: 'Sculpted Metal & Cups',
     price: 6800,
@@ -69,7 +69,7 @@ export const TROPHY_PRODUCTS: TrophyProduct[] = [
   },
   {
     id: 'tm-plaq-03',
-    name: 'The Meridian Floating Glass & Walnut Plaque',
+    name: 'Fresco Star',
     category: 'plaques',
     categoryLabel: 'Plaques & Mementos',
     price: 2650,
@@ -102,7 +102,7 @@ export const TROPHY_PRODUCTS: TrophyProduct[] = [
   },
   {
     id: 'tm-cryst-04',
-    name: 'The Polaris Star of Excellence',
+    name: 'Zenith Star',
     category: 'crystal',
     categoryLabel: 'Optical Crystal',
     price: 3950,
@@ -135,7 +135,7 @@ export const TROPHY_PRODUCTS: TrophyProduct[] = [
   },
   {
     id: 'tm-med-05',
-    name: 'The Crown Guild Die-Cast Medallion',
+    name: 'Kite Star',
     category: 'medals',
     categoryLabel: 'Medals & Insignias',
     price: 490,
@@ -165,103 +165,8 @@ export const TROPHY_PRODUCTS: TrophyProduct[] = [
       { minQty: 100, price: 290, discount: '40% Off' },
       { minQty: 500, price: 195, discount: '60% Off' }
     ]
-  },
-  {
-    id: 'tm-besp-06',
-    name: 'The Aurelius Sculptural Flame Trophy',
-    category: 'bespoke',
-    categoryLabel: 'Custom & Bespoke',
-    price: 5200,
-    originalPrice: 6200,
-    material: 'Cast Resin-Fiber Sculpted Flame & Smoked Crystal Column',
-    height: '14.0 inches (35.5 cm)',
-    weight: '2.9 kg',
-    rating: 5.0,
-    reviewsCount: 22,
-    sku: 'TM-BES-118',
-    image: '/trophis/Calvin-Star-1035-G-1-3-scaled-removebg-preview.png',
-    turnaroundDays: 3,
-    badge: 'Bespoke Creation',
-    silhouetteType: 'flame',
-    primaryColor: '#0E233E',
-    description: 'Organic spiraling eternal flame symbolizing unbroken passion and innovation. Custom cast with aerospace resin-fiber composite and finished in dual champagne gold and navy tint.',
-    features: [
-      'Exclusive Trophy Mart proprietary master mold sculpture',
-      'Metallic leaf hand-application technique by senior artisans',
-      'Heavy smoked K9 glass column with precision diamond beveling',
-      'Includes custom bespoke gold-plated brass inscription plaque'
-    ],
-    inStock: true,
-    bulkTiers: [
-      { minQty: 1, price: 5200, discount: 'Standard' },
-      { minQty: 5, price: 4680, discount: '10% Off' },
-      { minQty: 20, price: 4150, discount: '20% Off' },
-      { minQty: 50, price: 3650, discount: '30% Off' }
-    ]
-  },
-  {
-    id: 'tm-cryst-07',
-    name: 'The Helix Octagon Crystal Tower',
-    category: 'crystal',
-    categoryLabel: 'Optical Crystal',
-    price: 3100,
-    originalPrice: 3800,
-    material: 'Multi-Faceted Solid Clear K9 Optical Glass',
-    height: '10.0 inches (25.4 cm)',
-    weight: '1.9 kg',
-    rating: 4.7,
-    reviewsCount: 31,
-    sku: 'TM-CRY-551',
-    image: '/trophis/Fresco-Star-1007-L-1-1-scaled-removebg-preview.png',
-    turnaroundDays: 2,
-    silhouetteType: 'obelisk',
-    primaryColor: '#1A365D',
-    description: 'Geometric perfection with alternating twisted octagonal facets that catch light from any viewpoint in an executive suite or showcase vitrine.',
-    features: [
-      'Precision water-jet cut and diamond wheel hand-lapped facets',
-      'Deep optical refraction with crystal transparency',
-      'High-contrast frosted sandblast engraving',
-      'Substantial feel with broad rectangular presentation plinth'
-    ],
-    inStock: true,
-    bulkTiers: [
-      { minQty: 1, price: 3100, discount: 'Standard' },
-      { minQty: 10, price: 2750, discount: '11% Off' },
-      { minQty: 50, price: 2390, discount: '23% Off' }
-    ]
-  },
-  {
-    id: 'tm-gold-08',
-    name: 'The Victoria Laurel Wreath Cup',
-    category: 'sculpted-gold',
-    categoryLabel: 'Sculpted Metal & Cups',
-    price: 4850,
-    originalPrice: 5600,
-    material: 'Die-Struck Brass with High-Gloss Lacquered Composite Base',
-    height: '13.5 inches (34.3 cm)',
-    weight: '2.2 kg',
-    rating: 4.8,
-    reviewsCount: 47,
-    sku: 'TM-CUP-642',
-    image: '/trophis/Haven-Star-1031-G-1-3-scaled-removebg-preview.png',
-    turnaroundDays: 2,
-    badge: 'Classic Heritage',
-    silhouetteType: 'cup',
-    primaryColor: '#C59B27',
-    description: 'An enduring athletic and corporate standard, featuring deep-embossed Greek laurel foliage circling the cup rim with classical fluted body contours.',
-    features: [
-      'Mirror 24k electroplated gold bowl with anti-fingerprint sealant',
-      'High density midnight composite base with brass weight core',
-      'Engravable circular front emblem medallion slot',
-      'Supplied assembled and inspected with micro-fiber polishing glove'
-    ],
-    inStock: true,
-    bulkTiers: [
-      { minQty: 1, price: 4850, discount: 'Standard' },
-      { minQty: 10, price: 4250, discount: '12% Off' },
-      { minQty: 30, price: 3750, discount: '23% Off' }
-    ]
   }
+  
 ];
 
 export const RELATED_PRODUCTS: TrophyProduct[] = [
