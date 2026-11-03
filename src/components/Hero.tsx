@@ -22,7 +22,7 @@ const BANNER_SLIDES: BannerSlide[] = [
   {
     id: 'slide-2',
     image:
-      'https://vrfacwizigigcpowkrye.supabase.co/storage/v1/object/public/trophy/trophy_mart_banner_1902x827.png',
+      'https://vrfacwizigigcpowkrye.supabase.co/storage/v1/object/public/trophy/a/trophy_mart_banner_1902x827%20(1).png',
     mobileImage:
       'https://vrfacwizigigcpowkrye.supabase.co/storage/v1/object/public/trophy/so%20make%20it%20for%20mobile%20screen%20size%20,%20dimensions%20is%20962%20x%201635.png',
     alt: 'Championship Trophy Lights',
@@ -38,7 +38,7 @@ const BANNER_SLIDES: BannerSlide[] = [
    {
     id: 'slide-4',
     image:
-      'https://ddbmiixykqommytdhyny.supabase.co/storage/v1/object/sign/Trophy/WOODEN%20MEMENTO%20SERIES%20web.png?token=eyJraWQiOiI3ZjkzNTk5ZS1mNGQ2LTQxMjYtYjkyNi0yZjVmMGE4NGM3MTQiLCJhbGciOiJIUzUxMiJ9.eyJ1cmwiOiJUcm9waHkvV09PREVOIE1FTUVOVE8gU0VSSUVTIHdlYi5wbmciLCJzY29wZSI6ImRvd25sb2FkIiwiaWF0IjoxNzkzNjg1NzM5LCJleHAiOjE4NTY3NTc3Mzl9.HVSFZ05H41XYCNngJOXLf3Lj0ykEWpUeFOprA3fdGYZdISW5d5H4F6DXTGC8K4YRVw_iecNpbv7Ph78rRkbM4Q',
+      'https://vrfacwizigigcpowkrye.supabase.co/storage/v1/object/public/trophy/a/WOODEN%20MEMENTO%20SERIES%20web%20(1).png',
     mobileImage:
       'https://ddbmiixykqommytdhyny.supabase.co/storage/v1/object/sign/Trophy/WOODEN%20MEMENTO%20SERIES%20mobile.png?token=eyJraWQiOiI3ZjkzNTk5ZS1mNGQ2LTQxMjYtYjkyNi0yZjVmMGE4NGM3MTQiLCJhbGciOiJIUzUxMiJ9.eyJ1cmwiOiJUcm9waHkvV09PREVOIE1FTUVOVE8gU0VSSUVTIG1vYmlsZS5wbmciLCJzY29wZSI6ImRvd25sb2FkIiwiaWF0IjoxNzkzNjg1NzgzLCJleHAiOjE4NTY3NTc3ODN9.Jasnyb9wyZQq8AFr_N3xqVPATeeFQqnI_2hqp5PNJZZGCs5kTV_YFiS5XGvk_O1biAwHF_W_06q3dE0tBIBT7A',
     alt: 'Championship Trophy Lights',
