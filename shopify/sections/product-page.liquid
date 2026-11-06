@@ -1,0 +1,1100 @@
+{% comment %}
+  Trophy Mart — Product Page section (design mirrors src/components/ProductPage.tsx + SimilarProducts.tsx).
+
+  PURE CSS - no Tailwind, no escaped selectors, no external stylesheet.
+  Upload ONLY sections/product-page.liquid.
+
+  Install: Customize -> Product (template) -> Add section -> "Trophy Mart Product Page".
+  Remove Dawn's default "Product Information" section so only this one renders.
+
+  Features:
+  - Variant options (size, color, ...) as swatch buttons; switching updates price,
+    compare price, save %, image and availability.
+  - Add to Cart is a real Shopify form (posts to /cart/add) with quantity stepper.
+  - BRANDING button is static (no action).
+  - "Offers Available" cards are editable blocks.
+  - Accordions are editable blocks; the first accordion "Product Description"
+    always pulls the live product description.
+  - SKU comes from the product metafield custom.sku (falls back to the variant SKU).
+  - The price detail line shows the variant metafield custom.height in front of the
+    section's detail text.
+  - Breadcrumb shows the product's custom.highlighted_collection metafield.
+  - Similar Products = remaining products of the highlighted collection; if that
+    metafield is empty, the manual product list, else all products.
+{% endcomment %}
+
+<style>
+@import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&family=Manrope:wght@400;500;600;700;800&display=swap");
+
+/* ---------- Scoped reset ----------
+   Element resets use :where() so they have ZERO specificity - any .pp-*
+   component class always wins over them, and theme button/a/img styles
+   cannot leak into the component. */
+.tm-pp, .tm-pp *, .tm-pp *::before, .tm-pp *::after { box-sizing: border-box; }
+.tm-pp { font-family: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; color: #161C24; line-height: 1.4; background: #fff; }
+:where(.tm-pp) :where(h1, h2, h3, h4, p, ul, li, figure) { margin: 0; padding: 0; }
+:where(.tm-pp) :where(ul) { list-style: none; }
+:where(.tm-pp) :where(a) { color: inherit; text-decoration: none; }
+:where(.tm-pp) :where(img) { display: block; border: 0; }
+:where(.tm-pp) :where(button) { font: inherit; color: inherit; background-color: transparent; background-image: none; border: 0; border-radius: 0; padding: 0; margin: 0; cursor: pointer; -webkit-appearance: none; appearance: none; text-align: inherit; box-shadow: none; }
+:where(.tm-pp) :where(form) { margin: 0; }
+:where(.tm-pp) :where(input) { font: inherit; margin: 0; }
+.tm-pp [hidden] { display: none !important; }
+.tm-pp :focus-visible { outline: 2px solid #C5222A; outline-offset: 2px; }
+
+/* Theme guard: keep theme button/link skins from leaking into the component */
+.tm-pp .pp-btn, .tm-pp .pp-swatch, .tm-pp .pp-qty, .tm-pp .pp-qty-btn, .tm-pp .pp-qty-value,
+.tm-pp .pp-acc, .tm-pp .pp-acc-btn, .tm-pp .pp-offer-card, .tm-pp .pp-offer-arrow,
+.tm-pp .pp-thumb, .tm-pp .pp-main, .tm-pp .pp-badge, .tm-pp .pp-trust, .tm-pp .pp-trust-item,
+.tm-pp .pp-card, .tm-pp .pp-save { border-radius: 0; box-shadow: none; text-transform: none; }
+.tm-pp .pp-btn, .tm-pp .pp-save, .tm-pp .pp-badge, .tm-pp .pp-card-cat,
+.tm-pp .pp-option-label, .tm-pp .pp-trust-item span, .tm-pp .pp-kicker,
+.tm-pp .pp-similar-kicker, .tm-pp .pp-explore, .tm-pp .pp-crumb { text-transform: uppercase; }
+.tm-pp-empty { padding: 64px 16px; text-align: center; font-size: 14px; color: #64748B; }
+
+/* ---------- Layout ---------- */
+.pp-wrap { max-width: 1152px; margin: 0 auto; padding-left: 16px; padding-right: 16px; }
+.pp-breadcrumb { display: none; }
+.pp-crumb { font-size: 11px; text-transform: uppercase; letter-spacing: 0.18em; color: #64748B; }
+.pp-crumb a { transition: color 0.15s; }
+.pp-crumb a:hover { color: #C5222A; }
+.pp-crumb-sep { margin: 0 10px; color: #CBD5E1; }
+.pp-crumb-current { color: #0E233E; font-weight: 600; }
+
+.pp-grid { display: grid; grid-template-columns: 1fr; gap: 32px; align-items: start; padding-top: 16px; padding-bottom: 96px; }
+
+/* ---------- Gallery ---------- */
+.pp-gallery { display: flex; flex-direction: column; gap: 12px; }
+.pp-thumbs-wrap { display: none; }
+.pp-thumb { aspect-ratio: 2 / 3; border: 1px solid #E5E0D4; background: #FAF9F5; overflow: hidden; transition: border-color 0.15s; }
+.pp-thumb:hover { border-color: rgba(14, 35, 62, 0.5); }
+.pp-thumb.is-selected { border-color: #0E233E; }
+.pp-thumb img { width: 100%; height: 100%; max-width: none; object-fit: cover; }
+.pp-thumb-nav { display: none; }
+.pp-thumbs { display: flex; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory; scroll-behavior: smooth; -ms-overflow-style: none; scrollbar-width: none; }
+.pp-thumbs::-webkit-scrollbar { display: none; }
+.pp-thumb { flex: 0 0 auto; scroll-snap-align: start; }
+
+.pp-main { position: relative; order: -1; width: 100%; height: 320px; border: 1px solid #E5E0D4; background: #1B1B1B; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+.pp-main-img { position: relative; z-index: 10; width: 100%; height: 100%; max-width: none; object-fit: cover; object-position: center; transition: opacity 0.5s; }
+.pp-badge { position: absolute; top: 0; left: 0; z-index: 20; background: #0E233E; color: #fff; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.22em; padding: 10px 16px; }
+
+.pp-arrow { position: absolute; top: 50%; transform: translateY(-50%); z-index: 20; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(14, 35, 62, 0.2); background: rgba(255, 255, 255, 0.9); color: #0E233E; transition: background-color 0.15s, color 0.15s; }
+.pp-arrow:hover { background: #0E233E; color: #fff; }
+.pp-arrow-prev { left: 8px; }
+.pp-arrow-next { right: 8px; }
+.pp-arrow svg { width: 16px; height: 16px; }
+
+/* ---------- Details ---------- */
+.pp-details { display: flex; flex-direction: column; }
+.pp-rule { display: none; }
+.pp-kicker { display: none; }
+.pp-title { order: 1; font-family: 'Cormorant Garamond', Georgia, serif; font-size: 36px; line-height: 1.05; font-weight: 700; color: #0E233E; margin-top: 8px; }
+
+.pp-meta { display: none; }
+.pp-meta-sku { color: #64748B; letter-spacing: 0.025em; }
+.pp-meta-sep { display: inline-block; width: 1px; height: 12px; background: #E5E0D4; margin: 0 12px; vertical-align: middle; }
+.pp-stars { display: inline-flex; align-items: center; gap: 4px; vertical-align: middle; }
+.pp-stars svg { width: 13px; height: 13px; }
+.pp-reviews { margin-left: 6px; font-size: 12px; color: #64748B; }
+
+.pp-price-row { order: 2; display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; margin-top: 12px; }
+.pp-price { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 36px; font-weight: 700; color: #0E233E; font-variant-numeric: tabular-nums; }
+.pp-compare { font-size: 14px; color: #94A3B8; text-decoration: line-through; font-variant-numeric: tabular-nums; }
+.pp-save { border: 1px solid rgba(197, 34, 42, 0.3); background: rgba(197, 34, 42, 0.05); color: #C5222A; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.18em; padding: 4px 10px; }
+
+.pp-detail-line { display: none; }
+.pp-divider { display: none; }
+
+/* ---------- Options & swatches ---------- */
+.pp-options-row { order: 4; display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; margin-top: 24px; }
+.pp-options { min-width: 0; flex: 1 1 auto; }
+.pp-option + .pp-option { margin-top: 24px; }
+.pp-option-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.22em; color: #0E233E; }
+.pp-swatches { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 14px; }
+.pp-swatch { height: 48px; min-width: 48px; padding: 0 12px; border: 1px solid #E5E0D4; background: #fff; color: #475569; font-size: 14px; font-weight: 700; transition: border-color 0.15s, background-color 0.15s, color 0.15s; }
+.pp-swatch:hover { border-color: #0E233E; }
+.pp-swatch.is-selected { border-color: #0E233E; background: #0E233E; color: #fff; }
+
+/* Color swatches (option named Color / Colour) */
+.pp-swatch.pp-swatch-color { width: 40px; height: 40px; min-width: 40px; padding: 0; display: flex; align-items: center; justify-content: center; border-radius: 50%; background: #fff; }
+.pp-swatch.pp-swatch-color .pp-swatch-dot { width: 28px; height: 28px; border-radius: 50%; display: block; box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.12); }
+.pp-swatch.pp-swatch-color:hover { border-color: #0E233E; }
+.pp-swatch.pp-swatch-color.is-selected { border-color: #0E233E; background: #fff; box-shadow: inset 0 0 0 2px #0E233E; }
+.pp-swatch-label { margin-left: 8px; font-size: 12px; font-weight: 600; color: #475569; }
+
+/* ---------- Quantity ---------- */
+.pp-qty { display: flex; border: 1px solid #E5E0D4; background: #fff; }
+.pp-qty-btn { width: 44px; height: 48px; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 700; color: #0E233E; transition: background-color 0.15s; }
+.pp-qty-btn:hover { background: #FAF9F5; }
+.pp-qty-value { width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 600; color: #0E233E; font-variant-numeric: tabular-nums; border-left: 1px solid #E5E0D4; border-right: 1px solid #E5E0D4; }
+.pp-qty-mobile .pp-qty-btn { width: 40px; }
+.pp-qty-mobile .pp-qty-value { width: 40px; }
+.pp-qty-desktop { display: none; }
+
+/* ---------- CTA row ---------- */
+.pp-cta { order: 3; display: flex; flex-wrap: wrap; align-items: stretch; gap: 12px; margin-top: 20px; }
+.pp-btn { min-width: 0; height: 48px; flex: 1 1 0; display: flex; align-items: center; justify-content: center; gap: 8px; padding: 0 12px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.15em; white-space: nowrap; transition: background-color 0.15s, color 0.15s; }
+.pp-btn svg { width: 15px; height: 15px; flex-shrink: 0; }
+.pp-btn-cart { background: #C5222A; color: #fff; }
+.pp-btn-cart:hover { background: #991B1B; }
+.pp-btn-cart:disabled { opacity: 0.5; cursor: not-allowed; }
+.pp-btn-branding { background: #fff; color: #0E233E; border: 1px solid #0E233E; }
+.pp-btn-branding:hover { background: #0E233E; color: #fff; }
+
+/* ---------- Offers ---------- */
+.pp-offers { order: 5; margin-top: 40px; }
+.pp-offers-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; margin-bottom: 16px; }
+.pp-offers-title { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 18px; font-weight: 700; color: #0E233E; letter-spacing: 0.025em; }
+.pp-offer-arrows { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+.pp-offer-arrow { width: 32px; height: 32px; border: 1px solid rgba(14, 35, 62, 0.25); background: #fff; color: #0E233E; display: flex; align-items: center; justify-content: center; transition: background-color 0.15s, color 0.15s; }
+.pp-offer-arrow:hover { background: #0E233E; color: #fff; }
+.pp-offer-arrow svg { width: 14px; height: 14px; }
+.pp-hide-sm { display: flex; }
+
+.pp-offers-track { display: flex; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory; scroll-behavior: smooth; padding-bottom: 4px; -ms-overflow-style: none; scrollbar-width: none; }
+.pp-offers-track::-webkit-scrollbar { display: none; }
+.pp-offer-card { position: relative; flex: 0 0 86%; scroll-snap-align: start; overflow: hidden; border: 1px solid #E5E0D4; background: #FAF9F5; padding: 20px; }
+.pp-offer-ring { position: absolute; top: -28px; right: -28px; width: 80px; height: 80px; border-radius: 50%; background: rgba(197, 155, 39, 0.1); box-shadow: 0 0 0 1px rgba(197, 155, 39, 0.3); pointer-events: none; }
+.pp-offer-icon { position: absolute; top: 10px; right: 10px; width: 16px; height: 16px; color: #C59B27; pointer-events: none; }
+.pp-offer-headline { padding-right: 32px; font-family: 'Cormorant Garamond', Georgia, serif; font-size: 16px; font-weight: 700; line-height: 1.375; color: #0E233E; }
+.pp-offer-detail { margin-top: 4px; font-size: 11px; line-height: 1.625; color: #64748B; }
+.pp-note { display: flex; align-items: flex-start; gap: 8px; margin-top: 12px; font-size: 10px; line-height: 1.625; color: #64748B; }
+.pp-note-icon { font-size: 8px; line-height: 16px; color: #C59B27; flex-shrink: 0; }
+
+/* ---------- Accordions ---------- */
+.pp-accs { order: 6; margin-top: 40px; display: flex; flex-direction: column; gap: 12px; }
+.pp-acc { border: 1px solid #E5E0D4; background: #fff; }
+.pp-acc-btn { width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 20px 24px; background: #fff; transition: background-color 0.15s; }
+.pp-acc-btn:hover { background: #FAF9F5; }
+.pp-acc-title { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 16px; font-weight: 700; color: #0E233E; letter-spacing: 0.025em; }
+.pp-acc-icon { width: 16px; height: 16px; color: #0E233E; flex-shrink: 0; transition: transform 0.2s, color 0.2s; }
+.pp-acc-icon.is-open { transform: rotate(180deg); color: #C5222A; }
+.pp-acc-body { padding: 20px 24px; border-top: 1px solid #E5E0D4; background: #fff; font-size: 14px; line-height: 1.625; color: #475569; }
+
+.pp-desc p { margin-bottom: 12px; }
+.pp-desc p:last-child { margin-bottom: 0; }
+.pp-desc ul, .pp-desc ol { list-style: disc; padding-left: 20px; margin-bottom: 12px; }
+.pp-desc li { margin-bottom: 6px; }
+.pp-desc strong, .pp-desc b { color: #0E233E; }
+.pp-desc a { color: #C5222A; text-decoration: underline; }
+.pp-desc h1, .pp-desc h2, .pp-desc h3, .pp-desc h4 { font-family: 'Cormorant Garamond', Georgia, serif; color: #0E233E; margin: 16px 0 8px; font-size: 18px; }
+
+.pp-points { display: flex; flex-direction: column; gap: 16px; }
+.pp-point { display: flex; gap: 12px; }
+.pp-point-icon { margin-top: 2px; font-size: 9px; line-height: 20px; color: #C59B27; flex-shrink: 0; }
+.pp-point p { font-size: 14px; line-height: 1.625; color: #475569; }
+.pp-point strong { color: #0E233E; font-weight: 600; }
+.pp-list { display: flex; flex-direction: column; gap: 6px; margin-top: 6px; }
+.pp-list li { display: flex; align-items: baseline; gap: 10px; font-size: 14px; color: #475569; }
+.pp-list-icon { font-size: 8px; color: #C59B27; flex-shrink: 0; }
+.pp-ship-row { display: flex; align-items: flex-start; gap: 12px; }
+.pp-ship-row svg { width: 16px; height: 16px; flex-shrink: 0; margin-top: 2px; }
+.pp-ship-note { padding-top: 4px; font-size: 12px; color: #64748B; }
+
+/* ---------- Trust badges ---------- */
+.pp-trust { order: 7; margin-top: 32px; display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 1px; background: #E5E0D4; border: 1px solid #E5E0D4; }
+.pp-trust-item { background: #fff; display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 20px 8px; text-align: center; }
+.pp-trust-item svg { width: 17px; height: 17px; color: #C59B27; }
+.pp-trust-item span { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.12em; color: #475569; line-height: 1.25; }
+
+/* ---------- Similar products ---------- */
+.pp-similar { border-top: 1px solid #E5E0D4; background: #fff; }
+.pp-similar-inner { max-width: 1152px; margin: 0 auto; padding: 64px 16px; }
+.pp-similar-head { display: flex; flex-direction: column; gap: 16px; margin-bottom: 32px; }
+.pp-similar-rule { width: 40px; height: 1px; background: #C59B27; }
+.pp-similar-kicker { margin-top: 16px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.28em; color: #C5222A; }
+.pp-similar-title { margin-top: 8px; font-family: 'Cormorant Garamond', Georgia, serif; font-size: 30px; font-weight: 700; color: #0E233E; line-height: 1.05; }
+.pp-similar-title em { font-style: italic; color: #C5222A; }
+.pp-explore { display: inline-flex; align-items: center; gap: 8px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.15em; color: #0E233E; border-bottom: 1px solid rgba(14, 35, 62, 0.3); padding-bottom: 4px; transition: color 0.15s, border-color 0.15s; }
+.pp-explore:hover { color: #C5222A; border-color: #C5222A; }
+.pp-explore svg { width: 13px; height: 13px; }
+.pp-similar-more { display: flex; justify-content: center; margin-top: 32px; }
+.pp-similar-actions { display: flex; align-items: center; gap: 16px; }
+.pp-similar-arrows { display: flex; align-items: center; gap: 8px; }
+.pp-similar-track { display: flex; gap: 8px; overflow-x: auto; scroll-snap-type: x mandatory; scroll-behavior: smooth; padding-bottom: 4px; -ms-overflow-style: none; scrollbar-width: none; }
+.pp-similar-track::-webkit-scrollbar { display: none; }
+.pp-card { flex: 0 0 calc(50% - 4px); scroll-snap-align: start; background: #fff; display: flex; flex-direction: column;border: 1px solid #E5E0D4; }
+.pp-card-media { position: relative; aspect-ratio: 4 / 5; background: #FAF9F5; overflow: hidden; }
+.pp-card-media img { position: absolute; inset: 0; width: 100%; height: 100%; max-width: none; object-fit: cover; object-position: center; transition: transform 0.5s; }
+.pp-card:hover .pp-card-media img { transform: scale(1.05); }
+.pp-card-fallback { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; }
+.pp-card-fallback svg { width: 66%; height: 66%; }
+.pp-card-body { padding: 16px; display: flex; flex-direction: column; flex: 1; }
+.pp-card-cat { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.2em; color: #C59B27; }
+.pp-card-title { margin-top: 6px; font-family: 'Cormorant Garamond', Georgia, serif; font-size: 15px; font-weight: 700; line-height: 1.375; color: #0E233E; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.pp-card-price-row { margin-top: auto; padding-top: 16px; display: flex; align-items: baseline; gap: 8px; }
+.pp-card-price { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 18px; font-weight: 700; color: #0E233E; font-variant-numeric: tabular-nums; }
+.pp-card-compare { font-size: 11px; color: #94A3B8; text-decoration: line-through; font-variant-numeric: tabular-nums; }
+
+/* ---------- Mobile order (matches the React design) ---------- */
+@media (max-width: 639px) {
+  .pp-details { display: flex; flex-direction: column; }
+  .pp-options-row { margin-top: 24px; align-items: flex-end; }
+}
+
+/* ---------- Tablet and up ---------- */
+@media (min-width: 640px) {
+  .pp-main { height: 380px; }
+  .pp-price-row { margin-top: 24px; }
+  .pp-meta { display: flex; align-items: center; gap: 0; margin-top: 16px; font-size: 12px; }
+  .pp-detail-line { display: block; margin-top: 8px; font-size: 11px; letter-spacing: 0.025em; color: #64748B; }
+  .pp-divider { display: block !important; margin: 32px 0; border-top: 1px solid #E5E0D4; }
+  .pp-cta { order: 7; margin-top: 36px; }
+  .pp-options-row { order: 6; margin-top: 0; }
+  .pp-qty-desktop { display: flex; flex-shrink: 0; }
+  .pp-qty-mobile { display: none; }
+  .pp-acc-title { font-size: 18px; }
+  .pp-offers-title { font-size: 20px; }
+  .pp-offer-arrow { width: 36px; height: 36px; }
+  .pp-offer-card { flex: 0 0 calc(50% - 6px); }
+  .pp-hide-sm { display: none; }
+  .pp-card-body { padding: 20px; }
+  .pp-card-title { font-size: 18px; }
+  .pp-card-price { font-size: 20px; }
+  .pp-similar-title { font-size: 36px; }
+  .pp-similar-inner { padding: 80px 24px; }
+  .pp-wrap { padding-left: 24px; padding-right: 24px; }
+}
+
+/* ---------- Desktop ---------- */
+@media (min-width: 1024px) {
+  .pp-breadcrumb { display: block; padding-top: 32px; padding-bottom: 32px; }
+  .pp-grid { grid-template-columns: 1fr 1fr; gap: 64px; padding-top: 0; }
+  .pp-gallery { flex-direction: row; gap: 16px; position: sticky; top: 112px; align-self: flex-start; align-items: stretch; }
+  .pp-main { order: 2; flex: 1; width: auto; height: auto; aspect-ratio: 4 / 5; background: #FAF9F5; }
+  .pp-thumbs-wrap { display: block; position: relative; order: 1; width: 80px; flex-shrink: 0; align-self: stretch; min-height: 0; }
+  .pp-thumbs { position: absolute; inset: 0; height: auto; max-height: none; flex-direction: column; gap: 12px; overflow-x: hidden; overflow-y: auto; scroll-snap-type: y mandatory; }
+  .pp-thumb { flex: 0 0 calc((100% - 48px) / 5); aspect-ratio: auto; width: 100%; scroll-snap-align: start; }
+  .pp-thumb-nav { display: none; }
+
+  .pp-rule { display: block; width: 40px; height: 1px; background: #C59B27; }
+  .pp-kicker { display: block; margin-top: 16px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.28em; color: #C5222A; }
+  .pp-title { order: 0; font-size: 48px; }
+  .pp-meta { order: 0; }
+  .pp-price-row { order: 0; margin-top: 28px; }
+  .pp-detail-line { order: 0; }
+  .pp-divider { order: 0; }
+  .pp-options-row { order: 0; margin-top: 0; }
+  .pp-cta { order: 0; margin-top: 36px; }
+  .pp-offers { order: 0; margin-top: 40px; }
+  .pp-accs { order: 0; margin-top: 40px; }
+  .pp-trust { order: 0; margin-top: 32px; }
+  .pp-card { flex: 0 0 calc(25% - 6px); }
+  .pp-similar-head { flex-direction: row; align-items: flex-end; justify-content: space-between; }
+  .pp-explore { display: inline-flex; align-items: center; gap: 8px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.15em; color: #0E233E; border-bottom: 1px solid rgba(14, 35, 62, 0.3); padding-bottom: 4px; transition: color 0.15s, border-color 0.15s; }
+  .pp-explore:hover { color: #C5222A; border-color: #C5222A; }
+  .pp-explore svg { width: 13px; height: 13px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tm-pp * { transition: none !important; }
+}
+</style>
+
+{%- assign root_id = 'TmProduct-' | append: section.id -%}
+{%- assign tm_product = product | default: section.settings.product -%}
+
+{%- if tm_product == blank -%}
+  <div class="tm-pp" id="{{ root_id }}" data-tm-product-page>
+    <p class="tm-pp-empty">Add this section to a product template, or pick a product in the section settings.</p>
+  </div>
+{%- else -%}
+
+{%- assign current_variant = tm_product.selected_or_first_available_variant -%}
+{%- assign sku_meta = tm_product.metafields.custom.sku.value | default: tm_product.metafields.custom.sku -%}
+{%- assign hl_collection = tm_product.metafields.custom.highlighted_collection.value -%}
+{%- assign height_meta = current_variant.metafields.custom.height.value | default: '' -%}
+{%- assign offer_count = 0 -%}
+{%- assign accordion_count = 0 -%}
+{%- for block in section.blocks -%}
+  {%- if block.type == 'offer' -%}{%- assign offer_count = offer_count | plus: 1 -%}{%- endif -%}
+  {%- if block.type == 'accordion' -%}{%- assign accordion_count = accordion_count | plus: 1 -%}{%- endif -%}
+{%- endfor -%}
+
+{%- capture variants_json -%}
+[{%- for v in tm_product.variants -%}{"id":{{ v.id }},"options":{{ v.options | json }},"price":{{ v.price | money | json }},"comparePrice":{% if v.compare_at_price > v.price %}{{ v.compare_at_price | money | json }}{% else %}null{% endif %},"savePct":{% if v.compare_at_price > v.price %}{{ v.compare_at_price | minus: v.price | times: 100.0 | divided_by: v.compare_at_price | round }}{% else %}0{% endif %},"available":{{ v.available }},"height":{{ v.metafields.custom.height.value | default: '' | json }},"sku":{{ v.sku | json }},"title":{{ v.title | json }},"image":{% if v.featured_image %}{{ v.featured_image | image_url: width: 1200 | json }}{% else %}null{% endif %}}{%- unless forloop.last -%},{%- endunless -%}{%- endfor -%}]
+{%- endcapture -%}
+
+{%- capture gallery_json -%}
+[{%- for image in tm_product.images limit: 8 -%}{"src":{{ image | image_url: width: 1200 | json }},"alt":{{ image.alt | default: tm_product.title | json }}}{%- unless forloop.last -%},{%- endunless -%}{%- endfor -%}]
+{%- endcapture -%}
+
+{%- capture fallback_points -%}
+Innovation~Exclusive design with a metal body and a glass diamond depicting elegance and craftsmanship. Both durable and economical.;
+Customization and Personalization~Customers can select from a variety of sizes, forms, and designs in addition to adding custom engravings or logos to honour certain accomplishments or occasions. Our team works closely to build a trophy that suits every client.;
+Quality Assurance~Quality is our top priority, with the shine of the diamond reflected the same even after one year. One year guaranteed period.;
+Occasion~Fit for every occasion like star awards, employee of the month, Growth Award, Sales Award and so on.;
+Precaution~Keep away from water and direct sunlight. In a cool dry display area.
+{%- endcapture -%}
+{%- assign fallback_points_items = fallback_points | split: ';' -%}
+
+<div class="tm-pp" id="{{ root_id }}" data-tm-product-page>
+
+  <!-- Breadcrumb (desktop only) -->
+  <div class="pp-wrap pp-breadcrumb">
+    <p class="pp-crumb">
+      <a href="{{ shop.url }}">Home</a>
+      <span class="pp-crumb-sep">/</span>
+      <a href="{{ hl_collection.url | default: tm_product.collections.first.url | default: routes.all_products_collection_url }}">{{ hl_collection.title | default: tm_product.collections.first.title | default: 'Shop' }}</a>
+      <span class="pp-crumb-sep">/</span>
+      <span class="pp-crumb-current">{{ tm_product.title }}</span>
+    </p>
+  </div>
+
+  <!-- Main grid -->
+  <div class="pp-wrap pp-grid">
+
+    <!-- Gallery -->
+    <div class="pp-gallery">
+      <div class="pp-thumbs-wrap">
+        <div class="pp-thumbs" data-tm-thumbs-track>
+          {%- for image in tm_product.images limit: 8 -%}
+            <button type="button" class="pp-thumb {% if forloop.first %}is-selected{% endif %}" data-tm-thumb="{{ forloop.index0 }}" aria-label="View image {{ forloop.index }}">
+              <img src="{{ image | image_url: width: 300 }}" alt="{{ tm_product.title }} view {{ forloop.index }}" loading="lazy">
+            </button>
+          {%- endfor -%}
+        </div>
+      </div>
+
+      <div class="pp-main">
+        {%- if section.settings.show_badge -%}
+          <span class="pp-badge">{{ section.settings.badge_text }}</span>
+        {%- endif -%}
+        <img class="pp-main-img" src="{{ tm_product.featured_image | image_url: width: 1200 }}" alt="{{ tm_product.title }}" data-tm-main-image>
+
+        <button type="button" class="pp-arrow pp-arrow-prev" data-tm-img-prev aria-label="Previous image">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"></path></svg>
+        </button>
+        <button type="button" class="pp-arrow pp-arrow-next" data-tm-img-next aria-label="Next image">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"></path></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Details -->
+    <div class="pp-details">
+
+      <div class="pp-rule"></div>
+      <p class="pp-kicker">{{ section.settings.kicker }}</p>
+      <h1 class="pp-title">{{ tm_product.title }}</h1>
+
+      <div class="pp-meta">
+        <span class="pp-meta-sku" data-tm-sku>{% if sku_meta != blank %}SKU {{ sku_meta }}{% elsif current_variant.sku != blank %}SKU {{ current_variant.sku }}{% else %}{{ tm_product.handle }}{% endif %}</span>
+        <span class="pp-meta-sep"></span>
+        <span class="pp-stars">
+          <svg viewBox="0 0 24 24" fill="#C59B27" stroke="#C59B27" stroke-width="1.5" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+          <svg viewBox="0 0 24 24" fill="#C59B27" stroke="#C59B27" stroke-width="1.5" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+          <svg viewBox="0 0 24 24" fill="#C59B27" stroke="#C59B27" stroke-width="1.5" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+          <svg viewBox="0 0 24 24" fill="#C59B27" stroke="#C59B27" stroke-width="1.5" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="#C59B27" stroke-width="1.5" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+          <span class="pp-reviews">{{ section.settings.reviews_text }}</span>
+        </span>
+      </div>
+
+      <div class="pp-price-row">
+        <span class="pp-price" data-tm-price>{{ current_variant.price | money }}</span>
+        <span class="pp-compare" data-tm-compare {% unless current_variant.compare_at_price > current_variant.price %}hidden{% endunless %}>{{ current_variant.compare_at_price | money }}</span>
+        <span class="pp-save" data-tm-save {% unless current_variant.compare_at_price > current_variant.price %}hidden{% endunless %}>Save {% if current_variant.compare_at_price > current_variant.price %}{{ current_variant.compare_at_price | minus: current_variant.price | times: 100.0 | divided_by: current_variant.compare_at_price | round }}{% endif %}%</span>
+      </div>
+
+      <p class="pp-detail-line" data-tm-detail-line>{% if height_meta != blank %}{{ height_meta }} &middot; {% endif %}{{ section.settings.detail_line }}</p>
+      <span data-tm-detail-base hidden>{{ section.settings.detail_line }}</span>
+
+      <div class="pp-divider"></div>
+
+      <!-- Options + mobile quantity -->
+      <div class="pp-options-row">
+        <div class="pp-options">
+          {%- assign tm_color_items = section.settings.color_map | split: ';' -%}
+          {%- for option in tm_product.options_with_values -%}
+            {%- assign opt_name_down = option.name | downcase -%}
+            {%- assign opt_is_color = false -%}
+            {%- if opt_name_down contains 'color' or opt_name_down contains 'colour' -%}
+              {%- assign opt_is_color = true -%}
+            {%- endif -%}
+            <div class="pp-option" data-tm-option data-tm-option-index="{{ forloop.index0 }}">
+              <p class="pp-option-label">{{ option.name }}</p>
+              <div class="pp-swatches">
+                {%- for value in option.values -%}
+                  {%- assign opt_idx = forloop.parentloop.index0 -%}
+                  {%- assign is_selected = false -%}
+                  {%- if current_variant.options[opt_idx] == value -%}{%- assign is_selected = true -%}{%- endif -%}
+
+                  {%- if opt_is_color -%}
+                    {%- comment -%} Color lookup: edit the "Color swatch map" setting (Variants group) {%- endcomment -%}
+                    {%- assign val_down = value | downcase | strip -%}
+                    {%- assign val_hex = '' -%}
+                    {%- for item in tm_color_items -%}
+                      {%- assign pair = item | split: ':' -%}
+                      {%- assign key = pair[0] | strip -%}
+                      {%- if key == val_down -%}{%- assign val_hex = pair[1] | strip -%}{%- break -%}{%- endif -%}
+                    {%- endfor -%}
+                    {%- if val_hex == '' -%}
+                      {%- for item in tm_color_items -%}
+                        {%- assign pair = item | split: ':' -%}
+                        {%- assign key = pair[0] | strip -%}
+                        {%- if key != '' and val_down contains key -%}{%- assign val_hex = pair[1] | strip -%}{%- break -%}{%- endif -%}
+                      {%- endfor -%}
+                    {%- endif -%}
+                    <button type="button" class="pp-swatch pp-swatch-color{% if is_selected %} is-selected{% endif %}"
+                      data-tm-option-value="{{ value | escape }}" title="{{ value | escape }}" aria-label="{{ value | escape }}">
+                      <span class="pp-swatch-dot" style="background-color: {% if val_hex != '' %}{{ val_hex }}{% else %}#E5E0D4{% endif %}"></span>
+                    </button>
+                  {%- else -%}
+                    <button type="button" class="pp-swatch{% if is_selected %} is-selected{% endif %}" data-tm-option-value="{{ value | escape }}">{{ value }}</button>
+                  {%- endif -%}
+                {%- endfor -%}
+              </div>
+            </div>
+          {%- endfor -%}
+        </div>
+
+        <div class="pp-qty-wrap pp-qty-mobile">
+          <p class="pp-option-label">Quantity</p>
+          <div class="pp-qty" style="margin-top:14px">
+            <button type="button" class="pp-qty-btn" data-tm-qty-minus aria-label="Decrease quantity">&minus;</button>
+            <span class="pp-qty-value" data-tm-qty-display>1</span>
+            <button type="button" class="pp-qty-btn" data-tm-qty-plus aria-label="Increase quantity">+</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Add to Cart + Branding -->
+      <form method="post" action="{{ routes.cart_add_url }}" class="pp-cta" data-tm-product-form>
+        <input type="hidden" name="id" value="{{ current_variant.id }}" data-tm-variant-id>
+        <input type="hidden" name="quantity" value="1" data-tm-quantity-input>
+
+        <div class="pp-qty pp-qty-desktop">
+          <button type="button" class="pp-qty-btn" data-tm-qty-minus aria-label="Decrease quantity">&minus;</button>
+          <span class="pp-qty-value" data-tm-qty-display>1</span>
+          <button type="button" class="pp-qty-btn" data-tm-qty-plus aria-label="Increase quantity">+</button>
+        </div>
+
+        <button type="submit" class="pp-btn pp-btn-cart" data-tm-add>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="21" r="1"></circle><circle cx="19" cy="21" r="1"></circle><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"></path></svg>
+          <span data-tm-add-label>Add to Cart</span>
+        </button>
+
+        <button type="button" class="pp-btn pp-btn-branding">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="13.5" cy="6.5" r=".5" fill="currentColor"></circle><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"></circle><circle cx="8.5" cy="7.5" r=".5" fill="currentColor"></circle><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"></circle><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"></path></svg>
+          BRANDING
+        </button>
+      </form>
+
+      <!-- Offers -->
+      <div class="pp-offers">
+        <div class="pp-offers-head">
+          <h3 class="pp-offers-title">Offers Available</h3>
+          <div class="pp-offer-arrows {% if offer_count <= 2 %}pp-hide-sm{% endif %}">
+            <button type="button" class="pp-offer-arrow" data-tm-offers-prev aria-label="Previous offers">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"></path></svg>
+            </button>
+            <button type="button" class="pp-offer-arrow" data-tm-offers-next aria-label="Next offers">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"></path></svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="pp-offers-track" data-tm-offers-track>
+          {%- if offer_count > 0 -%}
+            {%- for block in section.blocks -%}
+              {%- if block.type == 'offer' and block.settings.headline != blank -%}
+                <article class="pp-offer-card" {{ block.shopify_attributes }}>
+                  <span class="pp-offer-ring" aria-hidden="true"></span>
+                  <svg class="pp-offer-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="6.5" cy="6.5" r="2.5"></circle><line x1="19" y1="5" x2="5" y2="19"></line><circle cx="17.5" cy="17.5" r="2.5"></circle></svg>
+                  <p class="pp-offer-headline">{{ block.settings.headline }}</p>
+                  <p class="pp-offer-detail">{{ block.settings.detail }}</p>
+                </article>
+              {%- endif -%}
+            {%- endfor -%}
+          {%- else -%}
+            <article class="pp-offer-card">
+              <span class="pp-offer-ring" aria-hidden="true"></span>
+              <svg class="pp-offer-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="6.5" cy="6.5" r="2.5"></circle><line x1="19" y1="5" x2="5" y2="19"></line><circle cx="17.5" cy="17.5" r="2.5"></circle></svg>
+              <p class="pp-offer-headline">10% off on first purchase</p>
+              <p class="pp-offer-detail">On new customer login</p>
+            </article>
+            <article class="pp-offer-card">
+              <span class="pp-offer-ring" aria-hidden="true"></span>
+              <svg class="pp-offer-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="6.5" cy="6.5" r="2.5"></circle><line x1="19" y1="5" x2="5" y2="19"></line><circle cx="17.5" cy="17.5" r="2.5"></circle></svg>
+              <p class="pp-offer-headline">Additional 5% off</p>
+              <p class="pp-offer-detail">On purchase of minimum 10 products</p>
+            </article>
+          {%- endif -%}
+        </div>
+
+        {%- if section.settings.offers_note != blank -%}
+          <p class="pp-note"><span class="pp-note-icon" aria-hidden="true">&#9670;</span><span>{{ section.settings.offers_note }}</span></p>
+        {%- endif -%}
+      </div>
+
+      <!-- Accordions -->
+      <div class="pp-accs">
+
+        <!-- Product Description: always from the live product -->
+        <div class="pp-acc" data-tm-acc>
+          <button type="button" class="pp-acc-btn" data-tm-acc-toggle>
+            <span class="pp-acc-title">{{ section.settings.desc_title }}</span>
+            <svg class="pp-acc-icon" data-tm-acc-icon viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg>
+          </button>
+          <div class="pp-acc-body" data-tm-acc-body hidden>
+            <div class="pp-desc">
+              {%- if tm_product.description != blank -%}
+                {{ tm_product.description }}
+              {%- else -%}
+                <div class="pp-points">
+                  {%- for point in fallback_points_items -%}
+                    {%- assign pt = point | split: '~' -%}
+                    <div class="pp-point">
+                      <span class="pp-point-icon" aria-hidden="true">&#9670;</span>
+                      <p><strong>{{ pt[0] }}: </strong>{{ pt[1] | strip }}</p>
+                    </div>
+                  {%- endfor -%}
+                </div>
+              {%- endif -%}
+            </div>
+          </div>
+        </div>
+
+        <!-- Editable accordions -->
+        {%- for block in section.blocks -%}
+          {%- if block.type == 'accordion' and block.settings.title != blank -%}
+            <div class="pp-acc" data-tm-acc {{ block.shopify_attributes }}>
+              <button type="button" class="pp-acc-btn" data-tm-acc-toggle>
+                <span class="pp-acc-title">{{ block.settings.title }}</span>
+                <svg class="pp-acc-icon" data-tm-acc-icon viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg>
+              </button>
+              <div class="pp-acc-body" data-tm-acc-body hidden>
+                {{ block.settings.content | escape | newline_to_br }}
+              </div>
+            </div>
+          {%- endif -%}
+        {%- endfor -%}
+
+        <!-- Built-in accordions while none are added -->
+        {%- if accordion_count == 0 -%}
+          <div class="pp-acc" data-tm-acc>
+            <button type="button" class="pp-acc-btn" data-tm-acc-toggle>
+              <span class="pp-acc-title">Engraving &amp; Customisation Details</span>
+              <svg class="pp-acc-icon" data-tm-acc-icon viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg>
+            </button>
+            <div class="pp-acc-body" data-tm-acc-body hidden>
+              <p>Freedom to create the perfect award for you - <strong style="color:#0E233E;font-weight:500">A 5-step customisation process</strong></p>
+              <ul class="pp-list">
+                {%- assign steps = 'Tell us your vision|Collaborate with our expert designers|Personalise your trophy|Review and confirm your order|Final Approval and dispatch' | split: '|' -%}
+                {%- for item in steps -%}
+                  <li><span class="pp-list-icon" aria-hidden="true">&#9670;</span><span>{{ item }}</span></li>
+                {%- endfor -%}
+              </ul>
+            </div>
+          </div>
+
+          <div class="pp-acc" data-tm-acc>
+            <button type="button" class="pp-acc-btn" data-tm-acc-toggle>
+              <span class="pp-acc-title">Shipping &amp; Delivery</span>
+              <svg class="pp-acc-icon" data-tm-acc-icon viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg>
+            </button>
+            <div class="pp-acc-body" data-tm-acc-body hidden>
+              <div class="pp-ship-row">
+                <svg viewBox="0 0 24 24" fill="none" stroke="#C59B27" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"></path><path d="M15 18H9"></path><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.62l-3.48-4.35A1 1 0 0 0 17.52 8H14"></path><circle cx="17" cy="18" r="2"></circle><circle cx="7" cy="18" r="2"></circle></svg>
+                <p>Free standard shipping on orders above &#8377; 5,000 across India.</p>
+              </div>
+              <div class="pp-ship-row" style="margin-top:12px">
+                <svg viewBox="0 0 24 24" fill="none" stroke="#C59B27" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"></path></svg>
+                <p>Each piece is individually bubble-wrapped and shipped in a rigid gift box to prevent transit damage.</p>
+              </div>
+              <ul class="pp-list">
+                {%- assign ship_items = 'Metro cities: 2&ndash;4 working days|Tier 2 / Tier 3 cities: 4&ndash;7 working days|Express delivery available at additional cost' | split: '|' -%}
+                {%- for item in ship_items -%}
+                  <li><span class="pp-list-icon" aria-hidden="true">&#9670;</span><span>{{ item }}</span></li>
+                {%- endfor -%}
+              </ul>
+              <p class="pp-ship-note">* Delivery timelines are indicative and may vary during peak seasons.</p>
+            </div>
+          </div>
+        {%- endif -%}
+      </div>
+
+      <!-- Trust badges -->
+      <div class="pp-trust">
+        <div class="pp-trust-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"></path><path d="M15 18H9"></path><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.62l-3.48-4.35A1 1 0 0 0 17.52 8H14"></path><circle cx="17" cy="18" r="2"></circle><circle cx="7" cy="18" r="2"></circle></svg>
+          <span>{{ section.settings.trust_1 }}</span>
+        </div>
+        <div class="pp-trust-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="6"></circle><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"></path></svg>
+          <span>{{ section.settings.trust_2 }}</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Similar products: remaining products of the highlighted collection, else all products -->
+  {%- assign similar_products = hl_collection.products -%}
+  {%- if similar_products == blank -%}{%- assign similar_products = section.settings.products -%}{%- endif -%}
+  {%- if similar_products == blank -%}{%- assign similar_products = collections.all.products -%}{%- endif -%}
+  {%- if similar_products.size > 0 -%}
+    <section class="pp-similar">
+      <div class="pp-similar-inner">
+        <div class="pp-similar-head">
+          <div>
+            <div class="pp-similar-rule"></div>
+            <p class="pp-similar-kicker">Curated For You</p>
+            <h2 class="pp-similar-title">Similar <em>Products</em></h2>
+          </div>
+          <div class="pp-similar-actions">
+            <div class="pp-similar-arrows" data-tm-similar-arrows hidden>
+              <button type="button" class="pp-offer-arrow" data-tm-similar-prev aria-label="Previous products">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"></path></svg>
+              </button>
+              <button type="button" class="pp-offer-arrow" data-tm-similar-next aria-label="Next products">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"></path></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="pp-similar-track" data-tm-similar-track>
+          {%- assign shown = 0 -%}
+          {%- for sp in similar_products -%}
+            {%- if sp.id == tm_product.id -%}{%- continue -%}{%- endif -%}
+            {%- if shown >= 8 -%}{%- break -%}{%- endif -%}
+            <a class="pp-card" href="{{ sp.url }}">
+              <div class="pp-card-media">
+                {%- if sp.featured_image -%}
+                  <img src="{{ sp.featured_image | image_url: width: 600 }}" alt="{{ sp.title | escape }}" loading="lazy" draggable="false">
+                {%- else -%}
+                  <span class="pp-card-fallback">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="#B98A2E" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 21h8"></path><path d="M12 21v-6"></path><path d="M7 3h10v6a5 5 0 0 1-10 0V3Z"></path><path d="M7 5H4v2a3 3 0 0 0 3 3"></path><path d="M17 5h3v2a3 3 0 0 1-3 3"></path></svg>
+                  </span>
+                {%- endif -%}
+              </div>
+              <div class="pp-card-body">
+                <p class="pp-card-cat">{{ sp.type | default: 'Trophy Mart' }}</p>
+                <h3 class="pp-card-title">{{ sp.title }}</h3>
+                <div class="pp-card-price-row">
+                  <span class="pp-card-price">{{ sp.price | money }}</span>
+                  {%- if sp.compare_at_price > sp.price -%}
+                    <span class="pp-card-compare">{{ sp.compare_at_price | money }}</span>
+                  {%- endif -%}
+                </div>
+              </div>
+            </a>
+            {%- assign shown = shown | plus: 1 -%}
+          {%- endfor -%}
+        </div>
+
+        <div class="pp-similar-more">
+          <a class="pp-explore" href="{{ section.settings.explore_link | default: routes.all_products_collection_url }}">
+            Explore All Products
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+          </a>
+        </div>
+      </div>
+    </section>
+  {%- endif -%}
+
+  <script type="application/json" data-tm-variants>{{ variants_json }}</script>
+  <script type="application/json" data-tm-gallery>{{ gallery_json }}</script>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  var OFFER_AUTO_MS = 4000;
+  var registry = [];
+
+  function initRoot(root) {
+    if (root.getAttribute('data-tm-init') === '1') return;
+    root.setAttribute('data-tm-init', '1');
+
+    var variantsEl = root.querySelector('[data-tm-variants]');
+    var galleryEl = root.querySelector('[data-tm-gallery]');
+    var variants = variantsEl ? JSON.parse(variantsEl.textContent) : [];
+    var gallery = galleryEl ? JSON.parse(galleryEl.textContent) : [];
+
+    var mainImage = root.querySelector('[data-tm-main-image]');
+    var priceEl = root.querySelector('[data-tm-price]');
+    var compareEl = root.querySelector('[data-tm-compare]');
+    var saveEl = root.querySelector('[data-tm-save]');
+    var skuEl = root.querySelector('[data-tm-sku]');
+    var detailEl = root.querySelector('[data-tm-detail-line]');
+    var detailBaseEl = root.querySelector('[data-tm-detail-base]');
+    var detailBaseText = detailBaseEl ? detailBaseEl.textContent : '';
+    var hiddenId = root.querySelector('[data-tm-variant-id]');
+    var addBtn = root.querySelector('[data-tm-add]');
+    var addLabel = root.querySelector('[data-tm-add-label]');
+    var form = root.querySelector('[data-tm-product-form]');
+
+    /* ---------- Options / variant switching ---------- */
+    var optionGroups = Array.prototype.slice.call(root.querySelectorAll('[data-tm-option]'));
+    var selected = [];
+
+    optionGroups.forEach(function (group) {
+      var idx = parseInt(group.getAttribute('data-tm-option-index'), 10);
+      var btns = Array.prototype.slice.call(group.querySelectorAll('[data-tm-option-value]'));
+      btns.forEach(function (btn) {
+        if (btn.classList.contains('is-selected')) selected[idx] = btn.getAttribute('data-tm-option-value');
+        btn.addEventListener('click', function () {
+          btns.forEach(function (b) { b.classList.remove('is-selected'); });
+          btn.classList.add('is-selected');
+          selected[idx] = btn.getAttribute('data-tm-option-value');
+          applyVariant();
+        });
+      });
+    });
+
+    function findVariant() {
+      return variants.find(function (v) {
+        return v.options.every(function (opt, i) { return opt === selected[i]; });
+      }) || null;
+    }
+
+    function applyVariant() {
+      var v = findVariant();
+      if (!v) {
+        if (addBtn) addBtn.disabled = true;
+        if (addLabel) addLabel.textContent = 'Unavailable';
+        return;
+      }
+      if (hiddenId) hiddenId.value = v.id;
+      if (priceEl) priceEl.textContent = v.price;
+      if (compareEl) {
+        if (v.comparePrice) { compareEl.textContent = v.comparePrice; compareEl.hidden = false; }
+        else { compareEl.hidden = true; }
+      }
+      if (saveEl) {
+        if (v.comparePrice && v.savePct > 0) { saveEl.hidden = false; saveEl.textContent = 'Save ' + v.savePct + '%'; }
+        else { saveEl.hidden = true; }
+      }
+      if (skuEl) { /* product-level SKU metafield - stays constant across variants */ }
+      if (detailEl && detailBaseText) {
+        detailEl.textContent = (v.height ? v.height + ' \u00B7 ' : '') + detailBaseText;
+      }
+      if (addBtn && addLabel) {
+        addBtn.disabled = !v.available;
+        addLabel.textContent = v.available ? 'Add to Cart' : 'Sold Out';
+      }
+      if (mainImage) {
+        var src = v.image || (gallery[0] && gallery[0].src) || mainImage.getAttribute('src');
+        if (src) {
+          mainImage.style.opacity = '0';
+          mainImage.onload = function () { mainImage.style.opacity = '1'; };
+          mainImage.src = src;
+        }
+        var matched = -1;
+        gallery.forEach(function (g, i) { if (g.src === src) matched = i; });
+        setThumb(matched);
+      }
+    }
+
+    /* ---------- Gallery ---------- */
+    var imgIndex = 0;
+
+    function setThumb(index) {
+      imgIndex = index;
+      root.querySelectorAll('[data-tm-thumb]').forEach(function (t, i) {
+        if (i === index) t.classList.add('is-selected');
+        else t.classList.remove('is-selected');
+      });
+    }
+
+    root.querySelectorAll('[data-tm-thumb]').forEach(function (thumb) {
+      thumb.addEventListener('click', function () {
+        var i = parseInt(thumb.getAttribute('data-tm-thumb'), 10);
+        setThumb(i);
+        if (mainImage && gallery[i]) { mainImage.src = gallery[i].src; mainImage.alt = gallery[i].alt || ''; }
+      });
+    });
+
+    function stepImage(dir) {
+      if (!gallery.length) return;
+      var i = (imgIndex + dir + gallery.length) % gallery.length;
+      setThumb(i);
+      if (mainImage) mainImage.src = gallery[i].src;
+    }
+    var imgPrev = root.querySelector('[data-tm-img-prev]');
+    var imgNext = root.querySelector('[data-tm-img-next]');
+    if (imgPrev) imgPrev.addEventListener('click', function () { stepImage(-1); });
+    if (imgNext) imgNext.addEventListener('click', function () { stepImage(1); });
+
+    /* ---------- Quantity ---------- */
+    var qty = 1;
+    var qtyInput = root.querySelector('[data-tm-quantity-input]');
+    var qtyDisplays = root.querySelectorAll('[data-tm-qty-display]');
+    function renderQty() {
+      qtyDisplays.forEach(function (d) { d.textContent = qty; });
+      if (qtyInput) qtyInput.value = qty;
+    }
+    root.querySelectorAll('[data-tm-qty-minus]').forEach(function (b) {
+      b.addEventListener('click', function () { qty = Math.max(1, qty - 1); renderQty(); });
+    });
+    root.querySelectorAll('[data-tm-qty-plus]').forEach(function (b) {
+      b.addEventListener('click', function () { qty += 1; renderQty(); });
+    });
+
+    /* ---------- Offers slider ---------- */
+    var offersTrack = root.querySelector('[data-tm-offers-track]');
+    if (offersTrack) {
+      var offersPaused = false;
+
+      function offerStep() {
+        var first = offersTrack.firstElementChild;
+        var gap = parseFloat(getComputedStyle(offersTrack).columnGap || '0') || 0;
+        return (first ? first.offsetWidth : 280) + gap;
+      }
+      var offersPrev = root.querySelector('[data-tm-offers-prev]');
+      var offersNext = root.querySelector('[data-tm-offers-next]');
+      if (offersPrev) offersPrev.addEventListener('click', function () { offersTrack.scrollBy({ left: -offerStep(), behavior: 'smooth' }); });
+      if (offersNext) offersNext.addEventListener('click', function () { offersTrack.scrollBy({ left: offerStep(), behavior: 'smooth' }); });
+
+      if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        var timer = window.setInterval(function () {
+          if (offersPaused) return;
+          if (offersTrack.scrollWidth <= offersTrack.clientWidth + 4) return;
+          var atEnd = offersTrack.scrollLeft + offersTrack.clientWidth >= offersTrack.scrollWidth - 4;
+          offersTrack.scrollTo({ left: atEnd ? 0 : offersTrack.scrollLeft + offerStep(), behavior: 'smooth' });
+        }, OFFER_AUTO_MS);
+        registry.push({ root: root, timer: timer });
+
+        offersTrack.addEventListener('pointerenter', function () { offersPaused = true; });
+        offersTrack.addEventListener('pointerleave', function () { offersPaused = false; });
+        offersTrack.addEventListener('touchstart', function () { offersPaused = true; }, { passive: true });
+        offersTrack.addEventListener('touchend', function () { offersPaused = false; });
+      }
+    }
+
+    /* ---------- Similar products slider ---------- */
+    var similarTrack = root.querySelector('[data-tm-similar-track]');
+    var similarArrows = root.querySelector('[data-tm-similar-arrows]');
+    if (similarTrack && similarArrows) {
+      function similarStep() {
+        var first = similarTrack.firstElementChild;
+        var gap = parseFloat(getComputedStyle(similarTrack).columnGap || '0') || 0;
+        return (first ? first.offsetWidth : 300) + gap;
+      }
+      function updateSimilarArrows() {
+        similarArrows.hidden = similarTrack.scrollWidth <= similarTrack.clientWidth + 4;
+      }
+      var sPrev = root.querySelector('[data-tm-similar-prev]');
+      var sNext = root.querySelector('[data-tm-similar-next]');
+      if (sPrev) sPrev.addEventListener('click', function () { similarTrack.scrollBy({ left: -similarStep(), behavior: 'smooth' }); });
+      if (sNext) sNext.addEventListener('click', function () { similarTrack.scrollBy({ left: similarStep(), behavior: 'smooth' }); });
+      updateSimilarArrows();
+      window.addEventListener('resize', updateSimilarArrows);
+      registry.push({ root: root, resizeHandler: updateSimilarArrows });
+    }
+
+    /* ---------- Accordions ---------- */
+    root.querySelectorAll('[data-tm-acc-toggle]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var item = btn.closest('[data-tm-acc]');
+        if (!item) return;
+        var body = item.querySelector('[data-tm-acc-body]');
+        var icon = item.querySelector('[data-tm-acc-icon]');
+        var open = body.hidden;
+        body.hidden = !open;
+        if (icon) icon.classList.toggle('is-open', open);
+      });
+    });
+
+    /* Let the navbar cart badge know something was added */
+    if (form) {
+      form.addEventListener('submit', function () {
+        try { document.dispatchEvent(new CustomEvent('product:added')); } catch (e) {}
+      });
+    }
+
+    applyVariant();
+  }
+
+  function initAll() {
+    Array.prototype.forEach.call(document.querySelectorAll('[data-tm-product-page]'), initRoot);
+  }
+
+  document.addEventListener('shopify:section:load', function (e) {
+    var root = document.getElementById('TmProduct-' + e.detail.sectionId);
+    if (root) initRoot(root);
+  });
+
+  document.addEventListener('shopify:section:unload', function (e) {
+    var id = 'TmProduct-' + e.detail.sectionId;
+    registry = registry.filter(function (entry) {
+      if (entry.root.id === id || !entry.root.isConnected) {
+        if (entry.timer) window.clearInterval(entry.timer);
+        if (entry.resizeHandler) window.removeEventListener('resize', entry.resizeHandler);
+        return false;
+      }
+      return true;
+    });
+  });
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initAll);
+  } else {
+    initAll();
+  }
+})();
+</script>
+
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Trophy Mart Product Page",
+  "settings": [
+    {
+      "type": "product",
+      "id": "product",
+      "label": "Product (for preview outside product pages)"
+    },
+    {
+      "type": "header",
+      "content": "Variants"
+    },
+    {
+      "type": "textarea",
+      "id": "color_map",
+      "label": "Color swatch map",
+      "info": "One entry per color: name:#hex; separated by semicolons. Matches option values like Red, Navy Blue or Rose Gold. Unknown values fall back to a plain text swatch.",
+      "default": "red:#C0392B;blue:#2D6CDF;navy:#0E233E;black:#111111;white:#FFFFFF;grey:#9CA3AF;gray:#9CA3AF;silver:#C0C4C8;gold:#C9A227;rose gold:#E0A899;bronze:#A97142;copper:#B87333;green:#1F7A4A;teal:#0F766E;turquoise:#2DBFC0;cyan:#22B8CF;lime:#84CC16;olive:#6B7A2F;yellow:#EAB308;amber:#D97706;orange:#EA7317;coral:#F08072;peach:#F7C6A3;pink:#E8629B;magenta:#C026D3;purple:#7C3AED;violet:#8B5CF6;indigo:#4338CA;lavender:#C4B5FD;maroon:#7B1E28;brown:#6B4A2F;beige:#E6D9C5;ivory:#F6F1E3;cream:#F3EBD8;champagne:#E8D3A9"
+    },
+    {
+      "type": "header",
+      "content": "Badge & labels"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_badge",
+      "label": "Show corner badge",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "badge_text",
+      "label": "Badge text",
+      "default": "Best Seller"
+    },
+    {
+      "type": "text",
+      "id": "kicker",
+      "label": "Kicker (desktop)",
+      "default": "Trophy Mart Exclusive"
+    },
+    {
+      "type": "text",
+      "id": "reviews_text",
+      "label": "Reviews label",
+      "default": "(48 reviews)"
+    },
+    {
+      "type": "text",
+      "id": "detail_line",
+      "label": "Price detail line",
+      "default": "Inclusive of GST &middot; Official tax invoice provided"
+    },
+    {
+      "type": "header",
+      "content": "Offers"
+    },
+    {
+      "type": "text",
+      "id": "offers_note",
+      "label": "Offers footnote",
+      "default": "Up to 10 products no discount &mdash; offers applicable above that."
+    },
+    {
+      "type": "header",
+      "content": "Accordions"
+    },
+    {
+      "type": "text",
+      "id": "desc_title",
+      "label": "Product Description accordion title",
+      "default": "Product Description"
+    },
+    {
+      "type": "paragraph",
+      "content": "The first accordion always shows the live product description. Add more accordions with the blocks below."
+    },
+    {
+      "type": "header",
+      "content": "Trust badges"
+    },
+    {
+      "type": "text",
+      "id": "trust_1",
+      "label": "Badge 1",
+      "default": "Free Shipping &#8377;5k+"
+    },
+    {
+      "type": "text",
+      "id": "trust_2",
+      "label": "Badge 2",
+      "default": "Premium Crafted"
+    },
+    {
+      "type": "header",
+      "content": "Similar products"
+    },
+    {
+      "type": "product_list",
+      "id": "products",
+      "label": "Similar products",
+      "limit": 8
+    },
+    {
+      "type": "url",
+      "id": "explore_link",
+      "label": "Explore all products link"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "offer",
+      "name": "Offer",
+      "settings": [
+        {
+          "type": "text",
+          "id": "headline",
+          "label": "Headline",
+          "default": "10% off on first purchase"
+        },
+        {
+          "type": "text",
+          "id": "detail",
+          "label": "Detail",
+          "default": "On new customer login"
+        }
+      ]
+    },
+    {
+      "type": "accordion",
+      "name": "Accordion",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Accordion title"
+        },
+        {
+          "type": "textarea",
+          "id": "content",
+          "label": "Content",
+          "default": "Write the accordion content here."
+        }
+      ]
+    }
+  ],
+  "max_blocks": 10,
+  "presets": [
+    {
+      "name": "Trophy Mart Product Page"
+    }
+  ]
+}
+{% endschema %}

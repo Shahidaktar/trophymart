@@ -1,0 +1,595 @@
+{% comment %}
+  Trophy Mart - Collection Filters drawer (design mirrors the CollectionPage.tsx filter drawer).
+
+  PURE CSS. Upload ONLY sections/collection-filters.liquid.
+  Add to the COLLECTION template (order does not matter).
+
+  The drawer is opened by the "Filters" button of the Collection Product Grid
+  section and applies REAL Shopify filters: submitting the form reloads the
+  collection with filter params (filter.p.product_type, filter.v.price.lte, ...).
+  Filter groups come from the collection's native filters - enable them in the
+  Shopify Search & Discovery app if the drawer shows no groups.
+{% endcomment %}
+
+<style>
+.tm-cf, .tm-cf * { box-sizing: border-box; }
+.tm-cf { font-family: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; color: #161C24; line-height: 1.4; }
+:where(.tm-cf) :where(h3, h4, p) { margin: 0; padding: 0; }
+:where(.tm-cf) :where(button) { font: inherit; color: inherit; background: none; border: 0; padding: 0; margin: 0; cursor: pointer; -webkit-appearance: none; appearance: none; text-align: inherit; }
+:where(.tm-cf) :where(input) { font: inherit; margin: 0; }
+.tm-cf [hidden] { display: none !important; }
+
+.cf-overlay { position: fixed; inset: 0; z-index: 40; background: rgba(0, 0, 0, 0.5); -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px); }
+.cf-drawer { position: fixed; top: 0; bottom: 0; left: 0; z-index: 50; width: 85vw; max-width: 384px; background: #fff; border-right: 1px solid #E5E0D4; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); display: flex; flex-direction: column; }
+.cf-head { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; border-bottom: 1px solid #E5E0D4; }
+.cf-title { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 20px; font-weight: 700; color: #0E233E; }
+.cf-close { width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 50%; color: #64748B; transition: color 0.15s, background-color 0.15s; }
+.cf-close:hover { color: #0E233E; background: #F4F1EA; }
+.cf-close svg { width: 18px; height: 18px; }
+
+.cf-body { flex: 1; overflow-y: auto; padding: 24px 20px; display: flex; flex-direction: column; gap: 32px; }
+.cf-group-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.18em; color: #0E233E; }
+.cf-values { margin-top: 12px; display: flex; flex-direction: column; gap: 8px; }
+.cf-value { display: flex; align-items: center; gap: 12px; cursor: pointer; }
+.cf-value-child { padding-left: 16px; }
+.cf-value-current .cf-label { font-weight: 700; color: #0E233E; }
+.cf-box { position: relative; width: 16px; height: 16px; flex-shrink: 0; border: 1px solid #CBD5E1; background: #fff; transition: background-color 0.15s, border-color 0.15s; }
+.cf-value input { position: absolute; opacity: 0; width: 0; height: 0; }
+.cf-value input:checked + .cf-box { background: #0E233E; border-color: #0E233E; }
+.cf-box svg { position: absolute; inset: 0; margin: auto; width: 11px; height: 11px; color: #fff; opacity: 0; }
+.cf-value input:checked + .cf-box svg { opacity: 1; }
+.cf-color-dot { width: 16px; height: 16px; border-radius: 50%; flex-shrink: 0; box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.12); }
+.cf-label { font-size: 12px; color: #334155; }
+.cf-count { font-size: 10px; color: #94A3B8; margin-left: auto; }
+
+.cf-price-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.cf-price-value { font-size: 12px; font-weight: 700; color: #C5222A; font-variant-numeric: tabular-nums; }
+.cf-range { margin-top: 16px; width: 100%; accent-color: #C5222A; cursor: pointer; }
+.cf-range-labels { margin-top: 6px; display: flex; justify-content: space-between; font-size: 10px; color: #94A3B8; font-variant-numeric: tabular-nums; }
+
+.cf-foot { padding: 16px 20px; border-top: 1px solid #E5E0D4; display: flex; align-items: center; gap: 12px; }
+.cf-btn { flex: 1; min-width: 0; height: 44px; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.15em; transition: background-color 0.15s, color 0.15s; }
+.cf-btn-clear { border: 1px solid rgba(14, 35, 62, 0.25); color: #0E233E; background: #fff; }
+.cf-btn-clear:hover { background: #F4F1EA; }
+.cf-btn-apply { background: #0E233E; color: #fff; }
+.cf-btn-apply:hover { background: #1A365D; }
+.cf-empty { font-size: 12px; color: #64748B; line-height: 1.6; }
+</style>
+
+{%- assign tm_collection = collection | default: section.settings.collection -%}
+
+{%- if tm_collection != blank -%}
+{%- assign child_cols = tm_collection.metafields.custom.child_category.value -%}
+<div class="tm-cf" data-tm-filters>
+  <div class="cf-overlay" data-tm-close-filters hidden></div>
+
+  <aside class="cf-drawer" data-tm-filter-drawer role="dialog" aria-modal="true" aria-label="Filters" hidden>
+    <div class="cf-head">
+      <h3 class="cf-title">{{ section.settings.heading }}</h3>
+      <button type="button" class="cf-close" data-tm-close-filters aria-label="Close filters">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg>
+      </button>
+    </div>
+
+    <form method="get" action="{{ tm_collection.url }}" class="cf-form" data-tm-filter-form style="display:contents">
+      <div class="cf-body">
+        <!-- Category: the collection itself first, then its child categories -->
+        <div class="cf-group">
+          <h4 class="cf-group-title">Category</h4>
+          <div class="cf-values">
+            <label class="cf-value cf-value-current">
+              <input type="radio" name="tm_child" value="" data-count="{{ tm_collection.products_count }}" checked>
+              <span class="cf-box">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"></path></svg>
+              </span>
+              <span class="cf-label">{{ tm_collection.title }}</span>
+              <span class="cf-count">{{ tm_collection.products_count }}</span>
+            </label>
+
+            {%- if child_cols != blank -%}
+              {%- for child in child_cols -%}
+                <label class="cf-value cf-value-child">
+                  <input type="radio" name="tm_child" value="{{ child.handle | escape }}" data-count="{{ child.products_count }}">
+                  <span class="cf-box">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"></path></svg>
+                  </span>
+                  <span class="cf-label">{{ child.title }}</span>
+                  <span class="cf-count">{{ child.products_count }}</span>
+                </label>
+              {%- endfor -%}
+            {%- endif -%}
+          </div>
+        </div>
+
+        <!-- Size filter: every size value used by the collection's products -->
+        {%- assign size_items = '' -%}
+        {%- for p in tm_collection.products -%}
+          {%- for opt in p.options_with_values -%}
+            {%- assign on = opt.name | downcase -%}
+            {%- if on contains 'size' -%}
+              {%- for v in opt.values -%}
+                {%- assign t = v | strip | downcase | replace: ' ', '-' -%}
+                {%- assign probe = '~' | append: t | append: '~' -%}
+                {%- unless size_items contains probe -%}
+                  {%- assign size_items = size_items | append: probe -%}
+                  {%- assign size_items = size_items | append: v | strip | append: '|' -%}
+                {%- endunless -%}
+              {%- endfor -%}
+            {%- endif -%}
+          {%- endfor -%}
+        {%- endfor -%}
+
+        {%- if size_items != blank -%}
+          <div class="cf-group">
+            <h4 class="cf-group-title">{{ section.settings.size_label }}</h4>
+            <div class="cf-values">
+              {%- assign size_list = size_items | split: '|' -%}
+              {%- for entry in size_list -%}
+                {%- assign bits = entry | split: '~' -%}
+                {%- assign token = bits[1] -%}
+                {%- assign label = bits[2] -%}
+                {%- if token == blank -%}{%- continue -%}{%- endif -%}
+                {%- assign cnt = 0 -%}
+                {%- for p in tm_collection.products -%}
+                  {%- for opt in p.options_with_values -%}
+                    {%- assign on2 = opt.name | downcase -%}
+                    {%- if on2 contains 'size' -%}
+                      {%- for v in opt.values -%}
+                        {%- assign t2 = v | strip | downcase | replace: ' ', '-' -%}
+                        {%- if t2 == token -%}{%- assign cnt = cnt | plus: 1 -%}{%- break -%}{%- endif -%}
+                      {%- endfor -%}
+                    {%- endif -%}
+                  {%- endfor -%}
+                {%- endfor -%}
+                <label class="cf-value">
+                  <input type="checkbox" name="tm_size" value="{{ token }}" data-count="{{ cnt }}">
+                  <span class="cf-box">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"></path></svg>
+                  </span>
+                  <span class="cf-label">{{ label }}</span>
+                  <span class="cf-count">{{ cnt }}</span>
+                </label>
+              {%- endfor -%}
+            </div>
+          </div>
+        {%- endif -%}
+
+        <!-- Color filter with swatches -->
+        {%- assign tm_color_items = section.settings.color_map | split: ';' -%}
+        {%- assign color_items = '' -%}
+        {%- for p in tm_collection.products -%}
+          {%- for opt in p.options_with_values -%}
+            {%- assign on = opt.name | downcase -%}
+            {%- if on contains 'color' or on contains 'colour' -%}
+              {%- for v in opt.values -%}
+                {%- assign t = v | strip | downcase | replace: ' ', '-' -%}
+                {%- assign probe = '~' | append: t | append: '~' -%}
+                {%- unless color_items contains probe -%}
+                  {%- assign color_items = color_items | append: probe -%}
+                  {%- assign color_items = color_items | append: v | strip | append: '|' -%}
+                {%- endunless -%}
+              {%- endfor -%}
+            {%- endif -%}
+          {%- endfor -%}
+        {%- endfor -%}
+
+        {%- if color_items != blank -%}
+          <div class="cf-group">
+            <h4 class="cf-group-title">{{ section.settings.color_label }}</h4>
+            <div class="cf-values">
+              {%- assign color_list = color_items | split: '|' -%}
+              {%- for entry in color_list -%}
+                {%- assign bits = entry | split: '~' -%}
+                {%- assign token = bits[1] -%}
+                {%- assign label = bits[2] -%}
+                {%- if token == blank -%}{%- continue -%}{%- endif -%}
+
+                {%- assign val_down = label | downcase | strip -%}
+                {%- assign val_hex = '' -%}
+                {%- for item in tm_color_items -%}
+                  {%- assign pair = item | split: ':' -%}
+                  {%- assign key = pair[0] | strip -%}
+                  {%- if key == val_down -%}{%- assign val_hex = pair[1] | strip -%}{%- break -%}{%- endif -%}
+                {%- endfor -%}
+                {%- if val_hex == '' -%}
+                  {%- for item in tm_color_items -%}
+                    {%- assign pair = item | split: ':' -%}
+                    {%- assign key = pair[0] | strip -%}
+                    {%- if key != '' and val_down contains key -%}{%- assign val_hex = pair[1] | strip -%}{%- break -%}{%- endif -%}
+                  {%- endfor -%}
+                {%- endif -%}
+
+                {%- assign cnt = 0 -%}
+                {%- for p in tm_collection.products -%}
+                  {%- for opt in p.options_with_values -%}
+                    {%- assign on2 = opt.name | downcase -%}
+                    {%- if on2 contains 'color' or on2 contains 'colour' -%}
+                      {%- for v in opt.values -%}
+                        {%- assign t2 = v | strip | downcase | replace: ' ', '-' -%}
+                        {%- if t2 == token -%}{%- assign cnt = cnt | plus: 1 -%}{%- break -%}{%- endif -%}
+                      {%- endfor -%}
+                    {%- endif -%}
+                  {%- endfor -%}
+                {%- endfor -%}
+                <label class="cf-value">
+                  <input type="checkbox" name="tm_color" value="{{ token }}" data-count="{{ cnt }}">
+                  <span class="cf-box">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"></path></svg>
+                  </span>
+                  <span class="cf-color-dot" style="background-color: {% if val_hex != '' %}{{ val_hex }}{% else %}#E5E0D4{% endif %}"></span>
+                  <span class="cf-label">{{ label }}</span>
+                  <span class="cf-count">{{ cnt }}</span>
+                </label>
+              {%- endfor -%}
+            </div>
+          </div>
+        {%- endif -%}
+
+        <!-- Metafield filters: accessory / base material / body material / stand -->
+        {%- capture tm_mf_groups -%}accessory|{{ section.settings.mf_accessory_label }};base_material|{{ section.settings.mf_base_label }};body_material|{{ section.settings.mf_body_label }};stand|{{ section.settings.mf_stand_label }}{%- endcapture -%}
+        {%- assign tm_mf_group_list = tm_mf_groups | split: ';' -%}
+
+        {%- for grp in tm_mf_group_list -%}
+          {%- assign g = grp | split: '|' -%}
+          {%- assign mf_key = g[0] -%}
+          {%- assign mf_label = g[1] -%}
+          {%- assign mf_items = '' -%}
+
+          {%- for p in tm_collection.products -%}
+            {%- assign mf_val = p.metafields.custom[mf_key].value -%}
+            {%- if mf_val != blank -%}
+              {%- for v in mf_val -%}
+                {%- assign t = v | strip | downcase | replace: ' ', '-' -%}
+                {%- if t != blank -%}
+                  {%- assign probe = '~' | append: t | append: '~' -%}
+                  {%- unless mf_items contains probe -%}
+                    {%- assign mf_items = mf_items | append: probe -%}
+                    {%- assign mf_items = mf_items | append: v | strip | append: '|' -%}
+                  {%- endunless -%}
+                {%- endif -%}
+              {%- endfor -%}
+            {%- endif -%}
+          {%- endfor -%}
+
+          {%- if mf_items != blank -%}
+            <div class="cf-group">
+              <h4 class="cf-group-title">{{ mf_label }}</h4>
+              <div class="cf-values">
+                {%- assign mf_list = mf_items | split: '|' -%}
+                {%- for entry in mf_list -%}
+                  {%- assign bits = entry | split: '~' -%}
+                  {%- assign token = bits[1] -%}
+                  {%- assign label = bits[2] -%}
+                  {%- if token == blank -%}{%- continue -%}{%- endif -%}
+                  {%- assign cnt = 0 -%}
+                  {%- for p in tm_collection.products -%}
+                    {%- assign mf_val2 = p.metafields.custom[mf_key].value -%}
+                    {%- if mf_val2 != blank -%}
+                      {%- for v in mf_val2 -%}
+                        {%- assign t2 = v | strip | downcase | replace: ' ', '-' -%}
+                        {%- if t2 == token -%}{%- assign cnt = cnt | plus: 1 -%}{%- break -%}{%- endif -%}
+                      {%- endfor -%}
+                    {%- endif -%}
+                  {%- endfor -%}
+                  <label class="cf-value">
+                    <input type="checkbox" name="tm_mf_{{ mf_key }}" data-group="{{ mf_key }}" value="{{ token }}" data-count="{{ cnt }}">
+                    <span class="cf-box">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"></path></svg>
+                    </span>
+                    <span class="cf-label">{{ label }}</span>
+                    <span class="cf-count">{{ cnt }}</span>
+                  </label>
+                {%- endfor -%}
+              </div>
+            </div>
+          {%- endif -%}
+        {%- endfor -%}
+
+        {%- if tm_collection.filters.size > 0 -%}
+          {%- for filter in tm_collection.filters -%}            {%- if filter.type == 'price_range' -%}
+              {%- if section.settings.show_price -%}
+                {%- assign price_max_units = filter.range_max | divided_by: 100 -%}
+                {%- assign price_current = filter.max_value.value | divided_by: 100 -%}
+                <div class="cf-group">
+                  <div class="cf-price-head">
+                    <h4 class="cf-group-title">{{ section.settings.price_label }}</h4>
+                    <span class="cf-price-value" data-tm-price-output>
+                      {%- if filter.max_value.value == nil -%}Any{%- else -%}{{ filter.max_value.value | money }}{%- endif -%}
+                    </span>
+                  </div>
+                  <input type="hidden" name="filter.v.price.gte" value="0">
+                  <input class="cf-range" type="range" min="0" max="{{ price_max_units }}" step="100"
+                    value="{% if filter.max_value.value != nil %}{{ price_current }}{% else %}{{ price_max_units }}{% endif %}"
+                    name="filter.v.price.lte" data-tm-price-range
+                    data-money-format="{{ shop.money_format | strip_html | escape }}">
+                  <div class="cf-range-labels">
+                    <span>{{ 0 | money }}</span>
+                    <span>{{ filter.range_max | money }}</span>
+                  </div>
+                </div>
+              {%- endif -%}
+            {%- else -%}
+              {%- if filter.values.size > 0 -%}
+                <div class="cf-group">
+                  <h4 class="cf-group-title">{{ filter.label }}</h4>
+                  <div class="cf-values">
+                    {%- for value in filter.values -%}
+                      <label class="cf-value">
+                        <input type="checkbox" name="{{ value.param_name }}" value="{{ value.value | escape }}"
+                          {% if value.active %}checked{% endif %} {% if value.count == 0 and value.active == false %}disabled{% endif %}>
+                        <span class="cf-box">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"></path></svg>
+                        </span>
+                        <span class="cf-label">{{ value.label }}</span>
+                        <span class="cf-count">{{ value.count }}</span>
+                      </label>
+                    {%- endfor -%}
+                  </div>
+                </div>
+              {%- endif -%}
+            {%- endif -%}
+          {%- endfor -%}
+        {%- elsif child_cols == blank -%}
+          <p class="cf-empty">
+            No filters are available for this collection yet. Enable product filters in the Shopify
+            "Search &amp; Discovery" app to show categories and price here.
+          </p>
+        {%- endif -%}
+      </div>
+
+      <div class="cf-foot">
+        <a class="cf-btn cf-btn-clear" href="{{ tm_collection.url }}">Clear All</a>
+        <button type="submit" class="cf-btn cf-btn-apply" data-tm-apply-filters>
+          Show {{ tm_collection.products_count }}
+          {% if tm_collection.products_count == 1 %}Piece{% else %}Pieces{% endif %}
+        </button>
+      </div>
+    </form>
+  </aside>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  function initFilters() {
+    var root = document.querySelector('[data-tm-filters]');
+    if (!root || root.getAttribute('data-tm-init') === '1') return;
+    root.setAttribute('data-tm-init', '1');
+
+    var drawer = root.querySelector('[data-tm-filter-drawer]');
+    var overlay = root.querySelector('.cf-overlay');
+    var form = root.querySelector('[data-tm-filter-form]');
+    var range = root.querySelector('[data-tm-price-range]');
+    var priceOut = root.querySelector('[data-tm-price-output]');
+    var previousOverflow = '';
+
+    function openDrawer() {
+      if (!drawer) return;
+      drawer.hidden = false;
+      if (overlay) overlay.hidden = false;
+      previousOverflow = document.body.style.overflow;
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeDrawer() {
+      if (!drawer || drawer.hidden) return;
+      drawer.hidden = true;
+      if (overlay) overlay.hidden = true;
+      document.body.style.overflow = previousOverflow;
+    }
+
+    /* The grid's Filters button opens this drawer */
+    document.addEventListener('click', function (e) {
+      var opener = e.target.closest && e.target.closest('[data-tm-open-filters]');
+      if (opener) { e.preventDefault(); openDrawer(); }
+    });
+
+    root.querySelectorAll('[data-tm-close-filters]').forEach(function (el) {
+      el.addEventListener('click', closeDrawer);
+    });
+
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') closeDrawer();
+    });
+
+    /* Live price label while dragging the range */
+    if (range && priceOut) {
+      range.addEventListener('input', function () {
+        var max = parseInt(range.max, 10) || 0;
+        var val = parseInt(range.value, 10) || 0;
+        if (val >= max) {
+          priceOut.textContent = 'Any';
+        } else {
+          var format = range.getAttribute('data-money-format') || '';
+          var amount = (val * 100).toFixed(0);
+          var text = format.replace(/\{\{\s*amount\s*\}\}/g, formatNumber(amount, format));
+          priceOut.textContent = text || val;
+        }
+      });
+    }
+
+    function formatNumber(cents, format) {
+      var value = (parseInt(cents, 10) || 0) / 100;
+      var hasDecimals = /\./.test(format.replace(/[^{}]*\{\{\s*amount[^{}]*\}\}/, ''));
+      var parts = value.toFixed(hasDecimals ? 2 : 0).split('.');
+      var whole = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+      return parts.length > 1 ? whole + '.' + parts[1] : whole;
+    }
+
+    /* Keep the "Show N Pieces" label in sync with nothing else - it reflects the
+       current collection count; submitting applies the filters server-side. */
+    /* Category filter: radios carry the child collection handle; Apply filters in place. */
+    var applyBtn = root.querySelector('[data-tm-apply-filters]');
+
+    function selectedFacets() {
+      var facets = { children: [], sizes: [], colors: [] };
+      if (!form) return facets;
+
+      function checkedValues(name) {
+        return Array.prototype.slice.call(form.querySelectorAll('input[name="' + name + '"]:checked')).map(function (i) { return i.value; });
+      }
+
+      var child = form.querySelector('input[name="tm_child"]:checked');
+      if (child && child.value) facets.children = [child.value];
+      facets.sizes = checkedValues('tm_size');
+      facets.colors = checkedValues('tm_color');
+
+      Array.prototype.slice.call(form.querySelectorAll('input[name^="tm_mf_"]:checked')).forEach(function (input) {
+        var group = input.getAttribute('data-group');
+        if (!group) return;
+        if (!facets[group]) facets[group] = [];
+        facets[group].push(input.value);
+      });
+
+      return facets;
+    }
+
+    function facetCount(facets) {
+      var n = 0;
+      Object.keys(facets).forEach(function (k) { n += facets[k].length; });
+      return n;
+    }
+
+    function syncApplyLabel() {
+      if (!applyBtn) return;
+      if (facetCount(selectedFacets()) === 0) return;
+      applyBtn.textContent = 'Apply Filters';
+    }
+
+    if (form) {
+      form.querySelectorAll('input[name="tm_child"], input[name="tm_size"], input[name="tm_color"], input[name^="tm_mf_"]').forEach(function (input) {
+        input.addEventListener('change', syncApplyLabel);
+      });
+      syncApplyLabel();
+
+      form.addEventListener('submit', function (e) {
+        var facets = selectedFacets();
+
+        if (facetCount(facets) > 0) {
+          /* Filter the grid in place - no navigation, no URL change */
+          e.preventDefault();
+          document.dispatchEvent(new CustomEvent('tm:filters', { detail: facets }));
+          closeDrawer();
+          return;
+        }
+
+        if (drawer) {
+          drawer.hidden = true;
+          if (overlay) overlay.hidden = true;
+          document.body.style.overflow = previousOverflow;
+        }
+      });
+    }
+
+    /* Open automatically when filters are in the URL (so users can adjust) */
+    if (window.location.search.indexOf('filter.') > -1) {
+      /* leave closed - the page already shows filtered results */
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initFilters);
+  } else {
+    initFilters();
+  }
+
+  document.addEventListener('shopify:section:load', function () {
+    var root = document.querySelector('[data-tm-filters]');
+    if (root) root.removeAttribute('data-tm-init');
+    initFilters();
+  });
+})();
+</script>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Collection Filters",
+  "settings": [
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Collection (for preview outside collection pages)"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Drawer title",
+      "default": "Filters"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_price",
+      "label": "Show price filter",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "price_label",
+      "label": "Price filter label",
+      "default": "Max Price"
+    },
+    {
+      "type": "header",
+      "content": "Size & color filters"
+    },
+    {
+      "type": "text",
+      "id": "size_label",
+      "label": "Size group label",
+      "default": "Size"
+    },
+    {
+      "type": "text",
+      "id": "color_label",
+      "label": "Color group label",
+      "default": "Color"
+    },
+    {
+      "type": "textarea",
+      "id": "color_map",
+      "label": "Color swatch map",
+      "info": "One entry per color: name:#hex; separated by semicolons. Unknown values fall back to a neutral dot.",
+      "default": "red:#C0392B;blue:#2D6CDF;navy:#0E233E;black:#111111;white:#FFFFFF;grey:#9CA3AF;gray:#9CA3AF;silver:#C0C4C8;gold:#C9A227;rose gold:#E0A899;bronze:#A97142;copper:#B87333;green:#1F7A4A;teal:#0F766E;turquoise:#2DBFC0;cyan:#22B8CF;lime:#84CC16;olive:#6B7A2F;yellow:#EAB308;amber:#D97706;orange:#EA7317;coral:#F08072;peach:#F7C6A3;pink:#E8629B;magenta:#C026D3;purple:#7C3AED;violet:#8B5CF6;indigo:#4338CA;lavender:#C4B5FD;maroon:#7B1E28;brown:#6B4A2F;beige:#E6D9C5;ivory:#F6F1E3;cream:#F3EBD8;champagne:#E8D3A9"
+    },
+    {
+      "type": "header",
+      "content": "Metafield filters (custom.*)"
+    },
+    {
+      "type": "paragraph",
+      "content": "These groups read product metafields: custom.accessory, custom.base_material, custom.body_material, custom.stand. Use text or list-of-text metafields."
+    },
+    {
+      "type": "text",
+      "id": "mf_accessory_label",
+      "label": "Accessory group label",
+      "default": "Accessory"
+    },
+    {
+      "type": "text",
+      "id": "mf_base_label",
+      "label": "Base material group label",
+      "default": "Base Material"
+    },
+    {
+      "type": "text",
+      "id": "mf_body_label",
+      "label": "Body material group label",
+      "default": "Body Material"
+    },
+    {
+      "type": "text",
+      "id": "mf_stand_label",
+      "label": "Stand group label",
+      "default": "Stand"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Collection Filters"
+    }
+  ]
+}
+{% endschema %}

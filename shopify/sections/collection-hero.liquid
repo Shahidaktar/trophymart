@@ -1,0 +1,149 @@
+{% comment %}
+  Trophy Mart - Collection Hero banner (design mirrors the CollectionPage.tsx banner).
+
+  PURE CSS. Upload ONLY sections/collection-hero.liquid.
+  Add to the COLLECTION template, above the grid section.
+
+  Uses the collection's own image (or the fallback picked here), title and
+  description; the breadcrumb is inside the banner like the React design.
+{% endcomment %}
+
+<style>
+.tm-ch, .tm-ch * { box-sizing: border-box; }
+.tm-ch { font-family: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.4; }
+:where(.tm-ch) :where(h1, p) { margin: 0; padding: 0; }
+:where(.tm-ch) :where(a) { color: inherit; text-decoration: none; }
+:where(.tm-ch) :where(img) { display: block; border: 0; }
+
+.ch-hero { position: relative; background: #0E233E; overflow: hidden; }
+.ch-bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center; max-width: none; }
+.ch-shade-a { position: absolute; inset: 0; background: linear-gradient(to right, rgba(14, 35, 62, 0.95), rgba(14, 35, 62, 0.75), rgba(14, 35, 62, 0.35)); }
+.ch-shade-b { position: absolute; inset: 0; background: linear-gradient(to top, rgba(14, 35, 62, 0.8), rgba(14, 35, 62, 0), rgba(14, 35, 62, 0.6)); }
+
+.ch-wrap { position: relative; max-width: 1280px; margin: 0 auto; padding: 0 16px; }
+.ch-crumbs { padding: 16px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.1); font-size: 11px; text-transform: uppercase; letter-spacing: 0.18em; color: rgba(255, 255, 255, 0.6); }
+.ch-crumbs a { transition: color 0.15s; }
+.ch-crumbs a:hover { color: #DFB967; }
+.ch-sep { margin: 0 10px; color: rgba(255, 255, 255, 0.3); }
+.ch-current { color: #DFB967; font-weight: 600; }
+
+.ch-body { position: relative; z-index: 10; padding: 40px 0; max-width: 576px; }
+.ch-title { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 30px; font-weight: 700; color: #fff; line-height: 1.05; text-transform: capitalize; }
+.ch-desc { margin-top: 12px; max-width: 448px; font-size: 12px; line-height: 1.7; color: rgba(255, 255, 255, 0.7); }
+.ch-desc p { margin-bottom: 8px; }
+.ch-desc p:last-child { margin-bottom: 0; }
+
+@media (min-width: 640px) {
+  .ch-wrap { padding: 0 24px; }
+  .ch-body { padding: 48px 0; }
+  .ch-title { font-size: 36px; }
+  .ch-desc { font-size: 14px; }
+}
+@media (min-width: 1024px) {
+  .ch-title { font-size: 48px; }
+}
+</style>
+
+{%- assign tm_collection = collection | default: section.settings.collection -%}
+{%- assign hero_image = section.settings.background_image | default: tm_collection.image -%}
+
+{%- comment -%} Heading: collection title, title-cased by CSS, ending with "Collection" {%- endcomment -%}
+{%- assign hero_heading = section.settings.heading -%}
+{%- if hero_heading == blank -%}
+  {%- assign hero_heading = tm_collection.title | default: 'Trophies' -%}
+  {%- assign hero_words = hero_heading | split: ' ' -%}
+  {%- assign hero_last = hero_words | last | downcase -%}
+  {%- if hero_last != 'collection' -%}
+    {%- assign hero_heading = hero_heading | append: ' Collection' -%}
+  {%- endif -%}
+{%- endif -%}
+
+<div class="tm-ch">
+  <section class="ch-hero">
+    {%- if hero_image != blank -%}
+      <img class="ch-bg" src="{{ hero_image | image_url: width: 2000 }}" alt="" aria-hidden="true" loading="eager">
+    {%- elsif section.settings.background_url != blank -%}
+      <img class="ch-bg" src="{{ section.settings.background_url }}" alt="" aria-hidden="true" loading="eager" referrerpolicy="no-referrer">
+    {%- endif -%}
+    <div class="ch-shade-a"></div>
+    <div class="ch-shade-b"></div>
+
+    <div class="ch-wrap">
+      {%- if section.settings.show_breadcrumb -%}
+        <nav class="ch-crumbs" aria-label="Breadcrumb">
+          <a href="{{ shop.url }}">Home</a>
+          <span class="ch-sep">/</span>
+          <span>{{ section.settings.middle_label }}</span>
+          <span class="ch-sep">/</span>
+          <span class="ch-current">{{ tm_collection.title | default: section.settings.heading | default: 'Collection' }}</span>
+        </nav>
+      {%- endif -%}
+
+      <div class="ch-body">
+        <h1 class="ch-title">{{ hero_heading }}</h1>
+        {%- assign hero_text = section.settings.text | default: tm_collection.description -%}
+        {%- if hero_text != blank -%}
+          <div class="ch-desc">{{ hero_text }}</div>
+        {%- endif -%}
+      </div>
+    </div>
+  </section>
+</div>
+
+{% schema %}
+{
+  "name": "Collection Hero",
+  "settings": [
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Collection (for preview outside collection pages)"
+    },
+    {
+      "type": "header",
+      "content": "Background"
+    },
+    {
+      "type": "image_picker",
+      "id": "background_image",
+      "label": "Background image (default: collection image)"
+    },
+    {
+      "type": "text",
+      "id": "background_url",
+      "label": "Background image URL (fallback, optional)"
+    },
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading (default: collection title)"
+    },
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "Text (default: collection description)"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_breadcrumb",
+      "label": "Show breadcrumb",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "middle_label",
+      "label": "Breadcrumb middle label",
+      "default": "Products"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Collection Hero"
+    }
+  ]
+}
+{% endschema %}

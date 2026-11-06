@@ -1,0 +1,236 @@
+{% comment %}
+  Trophy Mart — Product Catalog slider (based on src/components/ProductCatalog.tsx).
+
+  Self-contained. Upload ONLY sections/product-catalog.liquid.
+
+  Pick a collection in the section settings; its products render as clean
+  portrait (3:4) product-image cards with the product name below, linking to
+  the product page. While no collection is picked, the store's default
+  all-products list is used. Arrows scroll; the track auto-advances every
+  3.5s, pausing on hover/touch and when off-screen.
+{% endcomment %}
+
+<style>
+/*! tailwindcss v4.3.4 | MIT License | https://tailwindcss.com */
+@import "https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&family=Manrope:wght@400;500;600;700;800&display=swap";
+:root,:host{--font-serif:"Cormorant Garamond", Georgia, serif;--spacing:4px;--container-7xl:1280px;--text-sm:14px;--text-sm--line-height:20px;--text-base:16px;--text-base--line-height:24px;--text-4xl:2.25rem;--text-4xl--line-height:2.5rem;--text-5xl:3rem;--text-5xl--line-height:1;--text-6xl:3.75rem;--text-6xl--line-height:1;--font-weight-bold:700;--tracking-tight:-.025em;--leading-snug:1.375;--default-transition-duration:.15s;--default-transition-timing-function:cubic-bezier(.4, 0, .2, 1)}
+.relative{position:relative}
+.z-20{z-index:20}
+.mx-auto{margin-inline:auto}.mb-4{margin-bottom:calc(var(--spacing) * 4)}.mb-6{margin-bottom:calc(var(--spacing) * 6)}.mt-4{margin-top:calc(var(--spacing) * 4)}
+.py-16{padding-block:calc(var(--spacing) * 16)}.py-20{padding-block:calc(var(--spacing) * 20)}.px-4{padding-inline:calc(var(--spacing) * 4)}
+.gap-2{gap:calc(var(--spacing) * 2)}.gap-3{gap:calc(var(--spacing) * 3)}.gap-4{gap:calc(var(--spacing) * 4)}.gap-5{gap:calc(var(--spacing) * 5)}.gap-7{gap:calc(var(--spacing) * 7)}
+.flex{display:flex}.flex-col{flex-direction:column}
+.items-center{align-items:center}.justify-between{justify-content:space-between}.justify-center{justify-content:center}
+.shrink-0{flex-shrink:0}
+.w-4{width:calc(var(--spacing) * 4)}.h-4{height:calc(var(--spacing) * 4)}.w-9{width:calc(var(--spacing) * 9)}.h-9{height:calc(var(--spacing) * 9)}.w-full{width:100%}.h-full{height:100%}.w-1\/3{width:33.333333%}.h-1\/3{height:33.333333%}
+.max-w-7xl{max-width:var(--container-7xl)}
+.aspect-\[3\/4\]{aspect-ratio:3/4}
+.overflow-hidden{overflow:hidden}.overflow-x-auto{overflow-x:auto}
+.no-scrollbar{-ms-overflow-style:none;scrollbar-width:none}
+.no-scrollbar::-webkit-scrollbar{display:none}
+.snap-start{scroll-snap-align:start}.snap-x{scroll-snap-type:x mandatory}.scroll-smooth{scroll-behavior:smooth}
+.text-left{text-align:left}.text-center{text-align:center}
+.font-serif{font-family:var(--font-serif)}
+.text-sm{font-size:var(--text-sm);line-height:var(--tw-leading,var(--text-sm--line-height))}.text-base{font-size:var(--text-base);line-height:var(--tw-leading,var(--text-base--line-height))}.text-4xl{font-size:var(--text-4xl);line-height:var(--tw-leading,var(--text-4xl--line-height))}
+.text-\[13px\]{font-size:13px;line-height:20px}
+.font-bold{--tw-font-weight:var(--font-weight-bold);font-weight:var(--font-weight-bold)}
+.leading-\[1\.02\]{--tw-leading:1.02;line-height:1.02}.leading-snug{--tw-leading:var(--leading-snug);line-height:var(--leading-snug)}
+.tracking-tight{--tw-tracking:var(--tracking-tight);letter-spacing:var(--tracking-tight)}
+.italic{font-style:italic}.whitespace-nowrap{white-space:nowrap}
+.bg-\[\#FAF9F5\]{background-color:#faf9f5}.bg-white{background-color:#fff}
+.text-\[\#0E233E\]{color:#0e233e}.text-\[\#C5222A\]{color:#c5222a}.text-\[\#64748B\]{color:#64748b}
+.border{border-style:solid;border-width:1px}.border-b{border-bottom-style:solid;border-bottom-width:1px}
+.border-\[\#E8E4DA\]{border-color:#e8e4da}.border-\[\#0E233E\]\/25{border-color:rgba(14,35,62,.25)}
+.object-cover{object-fit:cover}
+.w-\[calc\(50\%-0\.375rem\)\]{width:calc(50% - 0.375rem)}
+.line-clamp-2{-webkit-line-clamp:2;-webkit-box-orient:vertical;display:-webkit-box;overflow:hidden}
+.transition-colors{transition-property:color,background-color,border-color,outline-color,text-decoration-color,fill,stroke;transition-timing-function:var(--tw-ease,var(--default-transition-timing-function));transition-duration:var(--tw-duration,var(--default-transition-duration))}
+.transition-transform{transition-property:transform,translate,scale,rotate;transition-timing-function:var(--tw-ease,var(--default-transition-timing-function));transition-duration:var(--tw-duration,var(--default-transition-duration))}
+.duration-500{--tw-duration:.5s;transition-duration:.5s}
+@media (hover:hover){
+  .hover\:bg-\[\#0E233E\]:hover{background-color:#0e233e}
+  .hover\:text-white:hover{color:#fff}
+  .group:hover .group-hover\:scale-105{scale:105%}
+}
+@media (min-width:640px){.sm\:gap-5{gap:calc(var(--spacing) * 5)}.sm\:mb-8{margin-bottom:calc(var(--spacing) * 8)}.sm\:flex-row{flex-direction:row}.sm\:items-center{align-items:center}.sm\:w-10{width:calc(var(--spacing) * 10)}.sm\:h-10{height:calc(var(--spacing) * 10)}.sm\:text-sm{font-size:var(--text-sm);line-height:var(--tw-leading,var(--text-sm--line-height))}.sm\:w-\[calc\(33\.333\%-0\.833rem\)\]{width:calc(33.333% - 0.833rem)}.sm\:text-5xl{font-size:var(--text-5xl);line-height:var(--tw-leading,var(--text-5xl--line-height))}.sm\:py-20{padding-block:calc(var(--spacing) * 20)}.sm\:px-6{padding-inline:calc(var(--spacing) * 6)}}
+@media (min-width:1024px){.lg\:px-8{padding-inline:calc(var(--spacing) * 8)}.lg\:w-\[calc\(25\%-0\.9375rem\)\]{width:calc(25% - 0.9375rem)}.lg\:text-base{font-size:var(--text-base);line-height:var(--tw-leading,var(--text-base--line-height))}.lg\:text-6xl{font-size:var(--text-6xl);line-height:var(--tw-leading,var(--text-6xl--line-height))}.lg\:whitespace-nowrap{white-space:nowrap}}
+@media (min-width:1280px){.xl\:gap-7{gap:calc(var(--spacing) * 7)}.xl\:text-7xl{font-size:4.5rem;line-height:1}.xl\:text-lg{font-size:18px;line-height:28px}}
+
+:where(.tm-root) :is(h1, h2, h3, h4, h5, h6, p, ul, figure) { margin: 0; padding: 0; }
+:where(.tm-root) a { text-decoration: none; color: inherit; }
+:where(.tm-root) img { display: block; max-width: none; }
+:where(.tm-root) button { font: inherit; cursor: pointer; background: transparent; border: 0; padding: 0; -webkit-appearance: none; appearance: none; color: inherit; }
+.tm-root :focus-visible { outline: 2px solid #C5222A; outline-offset: 2px; border-radius: 2px; }
+.tm-root { font-family: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; color: #161C24; line-height: 1.4; }
+</style>
+
+{%- assign root_id = 'TmProd-' | append: section.id -%}
+{%- if section.settings.collection != blank -%}
+  {%- assign tm_collection = section.settings.collection -%}
+{%- else -%}
+  {%- assign tm_collection = collections.all -%}
+{%- endif -%}
+
+<div class="tm-root" id="{{ root_id }}" data-tm-prod>
+  <section id="catalog" class="py-16 sm:py-20 bg-[#FAF9F5] border-b border-[#E8E4DA]">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+      <!-- Heading -->
+      <div class="relative z-20 flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 sm:mb-8">
+        <h2 class="font-serif text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold tracking-tight text-[#0E233E] leading-[1.02] lg:whitespace-nowrap">
+          Find Your <span class="italic text-[#C5222A]">Perfect Trophy</span>
+        </h2>
+
+        <div class="flex items-center gap-2 shrink-0">
+          <button type="button" data-tm-prod-prev aria-label="Previous products"
+            class="w-9 h-9 sm:w-10 sm:h-10 border border-[#0E233E]/25 bg-white flex items-center justify-center text-[#0E233E] transition-colors hover:bg-[#0E233E] hover:text-white">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4" aria-hidden="true"><path d="m15 18-6-6 6-6"></path></svg>
+          </button>
+          <button type="button" data-tm-prod-next aria-label="Next products"
+            class="w-9 h-9 sm:w-10 sm:h-10 border border-[#0E233E]/25 bg-white flex items-center justify-center text-[#0E233E] transition-colors hover:bg-[#0E233E] hover:text-white">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4" aria-hidden="true"><path d="m9 18 6-6-6-6"></path></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Cards Slider -->
+      {%- if tm_collection.products.size > 0 -%}
+        <div class="no-scrollbar flex gap-3 sm:gap-5 xl:gap-7 overflow-x-auto snap-x snap-mandatory scroll-smooth" data-tm-track>
+          {%- for product in tm_collection.products limit: 8 -%}
+            <a href="{{ product.url }}" aria-label="{{ product.title | escape }}"
+              class="group relative snap-start shrink-0 w-[calc(50%-0.375rem)] sm:w-[calc(33.333%-0.833rem)] lg:w-[calc(25%-0.9375rem)] text-left">
+              <!-- Product image (portrait 3:4, no background layer) -->
+              <div class="relative aspect-[3/4] overflow-hidden">
+                {%- if product.featured_image -%}
+                  <img
+                    src="{{ product.featured_image | image_url: width: 600 }}"
+                    srcset="{{ product.featured_image | image_url: width: 300 }} 300w, {{ product.featured_image | image_url: width: 600 }} 600w, {{ product.featured_image | image_url: width: 900 }} 900w"
+                    sizes="(min-width: 1024px) 22vw, 40vw"
+                    alt="{{ product.title | escape }}" loading="lazy" decoding="async" draggable="false"
+                    class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+                {%- else -%}
+                  <span class="w-full h-full flex items-center justify-center">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="#B98A2E" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" class="w-1/3 h-1/3" aria-hidden="true"><path d="M8 21h8"></path><path d="M12 21v-6"></path><path d="M7 3h10v6a5 5 0 0 1-10 0V3Z"></path><path d="M7 5H4v2a3 3 0 0 0 3 3"></path><path d="M17 5h3v2a3 3 0 0 1-3 3"></path></svg>
+                  </span>
+                {%- endif -%}
+              </div>
+
+              <!-- Product name below the image -->
+              <h3 class="mt-4 text-center font-serif text-[13px] sm:text-sm lg:text-base xl:text-lg font-bold text-[#0E233E] leading-snug line-clamp-2">{{ product.title }}</h3>
+            </a>
+          {%- endfor -%}
+        </div>
+      {%- else -%}
+        <div class="py-20 text-center">
+          <p class="text-sm text-[#64748B]">No products in this category.</p>
+        </div>
+      {%- endif -%}
+    </div>
+  </section>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  var AUTO_MS = 3500;
+  var registry = [];
+
+  function attachTrack(root, track) {
+    var paused = false;
+    var visible = true;
+    var timer = null;
+
+    function step() {
+      var first = track.firstElementChild;
+      var gap = parseFloat(getComputedStyle(track).columnGap || '0') || 0;
+      return (first ? first.offsetWidth : 300) + gap;
+    }
+
+    function advance() {
+      if (paused || !visible) return;
+      var atEnd = track.scrollLeft + track.clientWidth >= track.scrollWidth - 4;
+      track.scrollTo({ left: atEnd ? 0 : track.scrollLeft + step(), behavior: 'smooth' });
+    }
+
+    function scrollSlider(direction) {
+      track.scrollBy({ left: direction * step(), behavior: 'smooth' });
+    }
+
+    var prev = root.querySelector('[data-tm-prod-prev]');
+    var next = root.querySelector('[data-tm-prod-next]');
+    if (prev) prev.addEventListener('click', function () { scrollSlider(-1); });
+    if (next) next.addEventListener('click', function () { scrollSlider(1); });
+
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    timer = window.setInterval(advance, AUTO_MS);
+    registry.push({ root: root, timer: timer, track: track });
+
+    track.addEventListener('pointerenter', function () { paused = true; });
+    track.addEventListener('pointerleave', function () { paused = false; });
+    track.addEventListener('touchstart', function () { paused = true; }, { passive: true });
+    track.addEventListener('touchend', function () { paused = false; });
+
+    if (typeof IntersectionObserver !== 'undefined') {
+      var observer = new IntersectionObserver(function (entries) {
+        visible = entries[0].isIntersecting;
+      }, { threshold: 0.25 });
+      observer.observe(track);
+      registry.push({ root: root, timer: null, observer: observer });
+    }
+  }
+
+  function initRoot(root) {
+    if (root.getAttribute('data-tm-init') === '1') return;
+    root.setAttribute('data-tm-init', '1');
+    var track = root.querySelector('[data-tm-track]');
+    if (track) attachTrack(root, track);
+  }
+
+  function initAll() {
+    Array.prototype.forEach.call(document.querySelectorAll('[data-tm-prod]'), initRoot);
+  }
+
+  document.addEventListener('shopify:section:load', function (e) {
+    var root = document.getElementById('TmProd-' + e.detail.sectionId);
+    if (root) initRoot(root);
+  });
+
+  document.addEventListener('shopify:section:unload', function (e) {
+    var id = 'TmProd-' + e.detail.sectionId;
+    registry = registry.filter(function (entry) {
+      if (entry.root.id === id || !entry.root.isConnected) {
+        if (entry.timer) window.clearInterval(entry.timer);
+        if (entry.observer) entry.observer.disconnect();
+        return false;
+      }
+      return true;
+    });
+  });
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initAll);
+  } else {
+    initAll();
+  }
+})();
+</script>
+
+{% schema %}
+{
+  "name": "Trophy Mart Product Catalog",
+  "settings": [
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Collection (default: all products)"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Trophy Mart Product Catalog"
+    }
+  ]
+}
+{% endschema %}

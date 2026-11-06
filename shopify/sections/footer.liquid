@@ -1,0 +1,315 @@
+﻿{% comment %}
+  Trophy Mart â€” Footer section (Tailwind-compiled design, mirrors src/components/Footer.tsx).
+
+  This file is self-contained: the compiled Tailwind CSS and all artwork live inside it.
+  Upload ONLY sections/footer.liquid - no extra CSS or image files.
+
+  Install: Online Store â†’ Themes â†’ Customize â†’ Footer â†’ Add section â†’
+  "Trophy Mart Footer". Remove Dawn's default "Footer" section so only this
+  footer renders.
+
+  The three link columns come from the Shopify panel (link lists in the
+  section settings); while no menu is picked, the built-in Trophy Mart lists
+  are used, matching the React design exactly. Brand text, contact details
+  and the copyright line are editable in the section settings.
+{% endcomment %}
+
+<style>
+/*! tailwindcss v4.3.4 | MIT License | https://tailwindcss.com */
+@import "https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&family=Manrope:wght@400;500;600;700;800&display=swap";
+:root,:host{--font-serif:"Cormorant Garamond", Georgia, serif;--spacing:4px;--container-sm:24rem;--container-7xl:1280px;--text-xs:12px;--text-xs--line-height:16px;--text-lg:18px;--text-lg--line-height:28px;--font-weight-bold:700;--tracking-wide:.025em;--leading-relaxed:1.625;--default-transition-duration:.15s;--default-transition-timing-function:cubic-bezier(.4, 0, .2, 1)}
+.flex{display:flex}.grid{display:grid}.flex-col{flex-direction:column}.grid-cols-1{grid-template-columns:repeat(1,minmax(0,1fr))}
+.items-center{align-items:center}.items-start{align-items:flex-start}.justify-between{justify-content:space-between}.shrink-0{flex-shrink:0}
+.order-1{order:1}.order-2{order:2}.order-3{order:3}.order-4{order:4}
+.gap-2\.5{gap:calc(var(--spacing) * 2.5)}.gap-3{gap:calc(var(--spacing) * 3)}.gap-4{gap:calc(var(--spacing) * 4)}.gap-6{gap:calc(var(--spacing) * 6)}.gap-10{gap:calc(var(--spacing) * 10)}
+.mx-auto{margin-inline:auto}.mt-0\.5{margin-top:calc(var(--spacing) * .5)}.mt-10{margin-top:calc(var(--spacing) * 10)}
+.p-1{padding:var(--spacing)}.px-4{padding-inline:calc(var(--spacing) * 4)}.pt-2{padding-top:calc(var(--spacing) * 2)}.pt-6{padding-top:calc(var(--spacing) * 6)}.py-16{padding-block:calc(var(--spacing) * 16)}
+.space-y-2>*+*{margin-top:calc(var(--spacing) * 2)}.space-y-3>*+*{margin-top:calc(var(--spacing) * 3)}.space-y-4>*+*{margin-top:calc(var(--spacing) * 4)}
+.h-4{height:calc(var(--spacing) * 4)}.h-14{height:calc(var(--spacing) * 14)}.w-4{width:calc(var(--spacing) * 4)}.w-auto{width:auto}
+.max-w-sm{max-width:var(--container-sm)}.max-w-7xl{max-width:var(--container-7xl)}
+.object-contain{object-fit:contain}.text-left{text-align:left}
+.font-serif{font-family:var(--font-serif)}
+.text-xs{font-size:var(--text-xs);line-height:var(--tw-leading,var(--text-xs--line-height))}.text-lg{font-size:var(--text-lg);line-height:var(--tw-leading,var(--text-lg--line-height))}
+.font-bold{--tw-font-weight:var(--font-weight-bold);font-weight:var(--font-weight-bold)}
+.leading-relaxed{--tw-leading:var(--leading-relaxed);line-height:var(--leading-relaxed)}
+.tracking-wide{--tw-tracking:var(--tracking-wide);letter-spacing:var(--tracking-wide)}
+.bg-\[\#F4F1EA\]{background-color:#f4f1ea}
+.text-\[\#161C24\]{color:#161c24}.text-\[\#475569\]{color:#475569}.text-\[\#334155\]{color:#334155}.text-\[\#0E233E\]{color:#0e233e}.text-\[\#C5222A\]{color:#c5222a}.text-\[\#64748B\]{color:#64748b}
+.border-t{border-top-style:solid;border-top-width:1px}.border-\[\#E5E0D4\]{border-color:#e5e0d4}
+.transition-colors{transition-property:color,background-color,border-color,outline-color,text-decoration-color,fill,stroke;transition-timing-function:var(--tw-ease,var(--default-transition-timing-function));transition-duration:var(--tw-duration,var(--default-transition-duration))}
+@media (hover:hover){.hover\:text-\[\#C5222A\]:hover{color:#c5222a}}
+@media (min-width:640px){.sm\:px-6{padding-inline:calc(var(--spacing) * 6)}.sm\:h-16{height:calc(var(--spacing) * 16)}.sm\:flex-row{flex-direction:row}}
+@media (min-width:768px){.md\:grid-cols-2{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (min-width:1024px){.lg\:col-span-2{grid-column:span 2/span 2}.lg\:col-span-3{grid-column:span 3/span 3}.lg\:col-span-4{grid-column:span 4/span 4}.lg\:grid-cols-12{grid-template-columns:repeat(12,minmax(0,1fr))}.lg\:px-8{padding-inline:calc(var(--spacing) * 8)}}
+
+.tm-root * { box-sizing: border-box; }
+.tm-root *::before, .tm-root *::after { box-sizing: inherit; }
+:where(.tm-root) :is(h1, h2, h3, h4, h5, h6, p, ul, figure, blockquote) { margin: 0; padding: 0; }
+:where(.tm-root) $1 { list-style: none; }
+:where(.tm-root) $1 { text-decoration: none; color: inherit; }
+:where(.tm-root) $1 { display: block; max-width: none; }
+.tm-root :focus-visible { outline: 2px solid #C5222A; outline-offset: 2px; border-radius: 2px; }
+.tm-root { font-family: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; color: #161C24; line-height: 1.4; }
+</style>
+
+{%- assign root_id = 'TmFooter-' | append: section.id -%}
+
+{%- capture type_fallback -%}Trophies;Medals & Badges;Plaques & Mementos;Cups & Shields{%- endcapture -%}
+{%- assign type_fallback_items = type_fallback | split: ';' -%}
+{%- capture occasion_fallback -%}Sports & Games;Education;Corporate Awards;Cultural & Community{%- endcapture -%}
+{%- assign occasion_fallback_items = occasion_fallback | split: ';' -%}
+
+<div class="tm-root" id="{{ root_id }}" data-tm-footer>
+  <footer class="bg-[#F4F1EA] text-[#161C24] border-t border-[#E5E0D4]">
+
+    <!-- Upper Main Footer Grid -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-10">
+
+        <!-- Brand Identity & Mission -->
+        <div class="lg:col-span-4 order-1 space-y-4">
+          <div class="flex items-center gap-3">
+            {%- if section.settings.logo != blank -%}
+              <img src="{{ section.settings.logo | image_url: width: 320 }}" alt="{{ shop.name }} Logo" width="320" height="112" class="h-14 sm:h-16 w-auto object-contain p-1">
+            {%- else -%}
+              <img src="https://trophymart.co.in/wp-content/uploads/2024/07/TROPHY-MART-1-removebg-preview.png" alt="Trophy Mart Logo" width="256" height="80" referrerpolicy="no-referrer" onerror="this.style.display='none'" class="h-14 sm:h-16 w-auto object-contain p-1">
+            {%- endif -%}
+          </div>
+
+          <p class="text-xs text-[#475569] leading-relaxed max-w-sm">{{ section.settings.brand_text }}</p>
+
+          <div class="pt-2 text-xs space-y-2 text-[#334155]">
+            {%- if section.settings.address != blank -%}
+              <div class="flex items-start gap-2.5">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 text-[#C5222A] shrink-0 mt-0.5" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                <span>{{ section.settings.address }}</span>
+              </div>
+            {%- endif -%}
+            {%- if section.settings.phone != blank -%}
+              <div class="flex items-center gap-2.5">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 text-[#C5222A] shrink-0" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+                <span>{{ section.settings.phone }}</span>
+              </div>
+            {%- endif -%}
+            {%- if section.settings.email != blank -%}
+              <div class="flex items-center gap-2.5">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 text-[#C5222A] shrink-0" aria-hidden="true"><rect width="20" height="16" x="2" y="4" rx="2"></rect><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path></svg>
+                <span><a href="mailto:{{ section.settings.email }}" class="hover:text-[#C5222A] transition-colors">{{ section.settings.email }}</a></span>
+              </div>
+            {%- endif -%}
+          </div>
+        </div>
+
+        <!-- Quick Collections Navigation -->
+        <div class="lg:col-span-3 order-3 space-y-3">
+          <h4 class="font-serif text-lg font-bold text-[#0E233E] tracking-wide">Shop by Type</h4>
+          <ul class="text-xs space-y-2 text-[#475569]">
+            {%- if section.settings.type_menu != blank and section.settings.type_menu.links.size > 0 -%}
+              {%- for link in section.settings.type_menu.links -%}
+                <li><a href="{{ link.url }}" class="hover:text-[#C5222A] transition-colors">{{ link.title }}</a></li>
+              {%- endfor -%}
+            {%- else -%}
+              {%- for label in type_fallback_items -%}
+                <li><a href="{{ routes.search_url }}?q={{ label | url_encode }}&amp;type=product" class="hover:text-[#C5222A] transition-colors">{{ label }}</a></li>
+              {%- endfor -%}
+            {%- endif -%}
+          </ul>
+        </div>
+
+        <!-- Quick Links -->
+        <div class="lg:col-span-2 order-2 space-y-3">
+          <h4 class="font-serif text-lg font-bold text-[#0E233E] tracking-wide">Quick Links</h4>
+          <ul class="text-xs space-y-2 text-[#475569]">
+            {%- if section.settings.quick_menu != blank and section.settings.quick_menu.links.size > 0 -%}
+              {%- for link in section.settings.quick_menu.links -%}
+                <li><a href="{{ link.url }}" class="hover:text-[#C5222A] transition-colors">{{ link.title }}</a></li>
+              {%- endfor -%}
+            {%- else -%}
+              <li><a href="{{ section.settings.home_link | default: '/' }}" data-tm-scroll-top class="hover:text-[#C5222A] transition-colors">Home</a></li>
+              <li><a href="{{ section.settings.about_link | default: '/pages/about' }}" data-tm-about class="hover:text-[#C5222A] transition-colors">About</a></li>
+              <li><a href="{{ routes.all_products_collection_url }}" class="hover:text-[#C5222A] transition-colors">Products</a></li>
+              <li><a href="{{ section.settings.contact_link | default: '/pages/contact' }}" class="hover:text-[#C5222A] transition-colors">Contact</a></li>
+            {%- endif -%}
+          </ul>
+        </div>
+
+        <!-- Shop by Occasion -->
+        <div class="lg:col-span-3 order-4 space-y-3">
+          <h4 class="font-serif text-lg font-bold text-[#0E233E] tracking-wide">Shop by Occasion</h4>
+          <ul class="text-xs space-y-2 text-[#475569]">
+            {%- if section.settings.occasion_menu != blank and section.settings.occasion_menu.links.size > 0 -%}
+              {%- for link in section.settings.occasion_menu.links -%}
+                <li><a href="{{ link.url }}" class="hover:text-[#C5222A] transition-colors text-left">{{ link.title }}</a></li>
+              {%- endfor -%}
+            {%- else -%}
+              {%- for label in occasion_fallback_items -%}
+                <li><a href="{{ routes.search_url }}?q={{ label | url_encode }}&amp;type=product" class="hover:text-[#C5222A] transition-colors text-left">{{ label }}</a></li>
+              {%- endfor -%}
+            {%- endif -%}
+          </ul>
+        </div>
+
+      </div>
+
+      <!-- Bottom Legal / Copyright Bar -->
+      <div class="mt-10 pt-6 border-t border-[#E5E0D4] flex flex-col sm:flex-row items-center justify-between text-xs text-[#64748B] gap-4">
+        <div>{{ section.settings.copyright }}</div>
+        <div class="flex items-center gap-6">
+          {%- if section.settings.legal_menu != blank and section.settings.legal_menu.links.size > 0 -%}
+            {%- for link in section.settings.legal_menu.links -%}
+              <a href="{{ link.url }}" class="hover:text-[#C5222A] transition-colors">{{ link.title }}</a>
+            {%- endfor -%}
+          {%- else -%}
+            <a href="{{ shop.privacy_policy.url | default: '#' }}" class="hover:text-[#C5222A] transition-colors">Privacy Policy</a>
+            <a href="{{ shop.terms_of_service.url | default: '#' }}" class="hover:text-[#C5222A] transition-colors">Terms of Commission</a>
+            <a href="#" class="hover:text-[#C5222A] transition-colors">GST Compliance</a>
+          {%- endif -%}
+        </div>
+      </div>
+
+    </div>
+  </footer>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  function initRoot(root) {
+    if (root.getAttribute('data-tm-init') === '1') return;
+    root.setAttribute('data-tm-init', '1');
+
+    /* Smooth-scroll helpers, same behaviour as Footer.tsx */
+    root.querySelectorAll('[data-tm-scroll-top]').forEach(function (el) {
+      el.addEventListener('click', function (e) {
+        e.preventDefault();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+    });
+
+    root.querySelectorAll('[data-tm-about]').forEach(function (el) {
+      el.addEventListener('click', function (e) {
+        var target = document.getElementById('about') || document.getElementById('craftsmanship');
+        if (target) {
+          e.preventDefault();
+          target.scrollIntoView({ behavior: 'smooth' });
+        }
+      });
+    });
+  }
+
+  function initAll() {
+    Array.prototype.forEach.call(document.querySelectorAll('[data-tm-footer]'), initRoot);
+  }
+
+  document.addEventListener('shopify:section:load', function (e) {
+    var root = document.getElementById('TmFooter-' + e.detail.sectionId);
+    if (root) initRoot(root);
+  });
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initAll);
+  } else {
+    initAll();
+  }
+})();
+</script>
+
+{% schema %}
+{
+  "name": "Trophy Mart Footer",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "logo",
+      "label": "Logo (default: Trophy Mart logo)"
+    },
+    {
+      "type": "textarea",
+      "id": "brand_text",
+      "label": "Brand text",
+      "default": "India's foremost manufacturer and stockist of luxury optical crystal trophies, hand-cast 24k gold chalices, and bespoke corporate awards. Direct factory pricing with pan-India white-glove dispatch."
+    },
+    {
+      "type": "header",
+      "content": "Contact details"
+    },
+    {
+      "type": "text",
+      "id": "address",
+      "label": "Address",
+      "default": "100 A & B, Kabi Sukanta Sarani, Koley Biscuit Compound, Beliaghata, Kolkata-700085"
+    },
+    {
+      "type": "text",
+      "id": "phone",
+      "label": "Phone",
+      "default": "+91 79806 20672 / +91 9674163446"
+    },
+    {
+      "type": "text",
+      "id": "email",
+      "label": "Email",
+      "default": "trophymartindia@gmail.com"
+    },
+    {
+      "type": "header",
+      "content": "Menus (blank = built-in Trophy Mart lists)"
+    },
+    {
+      "type": "link_list",
+      "id": "type_menu",
+      "label": "Shop by Type menu"
+    },
+    {
+      "type": "link_list",
+      "id": "occasion_menu",
+      "label": "Shop by Occasion menu"
+    },
+    {
+      "type": "link_list",
+      "id": "quick_menu",
+      "label": "Quick Links menu"
+    },
+    {
+      "type": "link_list",
+      "id": "legal_menu",
+      "label": "Bottom bar links"
+    },
+    {
+      "type": "header",
+      "content": "Quick Links targets (used while no menu is picked)"
+    },
+    {
+      "type": "url",
+      "id": "home_link",
+      "label": "Home link"
+    },
+    {
+      "type": "url",
+      "id": "about_link",
+      "label": "About link"
+    },
+    {
+      "type": "url",
+      "id": "contact_link",
+      "label": "Contact link"
+    },
+    {
+      "type": "header",
+      "content": "Bottom bar"
+    },
+    {
+      "type": "text",
+      "id": "copyright",
+      "label": "Copyright text",
+      "default": "Â© 2026 Trophy Mart. All rights reserved. Handcrafted with pride in Kolkata, India."
+    }
+  ],
+  "presets": [
+    {
+      "name": "Trophy Mart Footer"
+    }
+  ]
+}
+{% endschema %}

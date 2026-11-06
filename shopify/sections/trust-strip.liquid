@@ -1,0 +1,121 @@
+﻿{% comment %}
+  Trophy Mart â€” Trust Strip (client logo marquee, mirrors src/components/TrustStrip.tsx).
+
+  Self-contained: the compiled Tailwind CSS lives inside it.
+  Upload ONLY sections/trust-strip.liquid - no extra CSS or image files.
+
+  Logos are section blocks (add one "Logo" block per client logo). While no
+  blocks are added, the five built-in Trophy Mart client logos are shown.
+  The marquee loops seamlessly, pauses on hover, and is disabled for users
+  who prefer reduced motion.
+{% endcomment %}
+
+<style>
+/*! tailwindcss v4.3.4 | MIT License | https://tailwindcss.com */
+:root,:host{--spacing:4px;--default-transition-duration:.15s;--default-transition-timing-function:cubic-bezier(.4, 0, .2, 1)}
+.relative{position:relative}.absolute{position:absolute}
+.inset-y-0{top:0;bottom:0}.left-0{left:0}.right-0{right:0}.z-10{z-index:10}
+.overflow-hidden{overflow:hidden}
+.py-2{padding-block:calc(var(--spacing) * 2)}.py-8{padding-block:calc(var(--spacing) * 8)}
+.pr-14{padding-right:calc(var(--spacing) * 14)}
+.gap-14{gap:calc(var(--spacing) * 14)}
+.flex{display:flex}.w-max{width:max-content}.shrink-0{flex-shrink:0}.items-center{align-items:center}
+.h-8{height:calc(var(--spacing) * 8)}.w-auto{width:auto}
+.max-w-\[140px\]{max-width:140px}
+.object-contain{object-fit:contain}
+.bg-white{background-color:#fff}
+.border-b{border-bottom-style:solid;border-bottom-width:1px}.border-\[\#E8E4DA\]{border-color:#e8e4da}
+.bg-gradient-to-r{--tw-gradient-position:to right in oklab;background-image:linear-gradient(var(--tw-gradient-stops))}
+.bg-gradient-to-l{--tw-gradient-position:to left in oklab;background-image:linear-gradient(var(--tw-gradient-stops))}
+.from-white{--tw-gradient-from:#fff;--tw-gradient-stops:var(--tw-gradient-via-stops,var(--tw-gradient-position),var(--tw-gradient-from) var(--tw-gradient-from-position),var(--tw-gradient-to) var(--tw-gradient-to-position))}
+.to-transparent{--tw-gradient-to:transparent}
+.pointer-events-none{pointer-events:none}
+.w-20{width:calc(var(--spacing) * 20)}
+.grayscale{filter:grayscale(100%)}.grayscale-0{filter:grayscale(0)}
+.opacity-60{opacity:.6}.opacity-100{opacity:1}
+.transition{transition-property:color,background-color,border-color,outline-color,text-decoration-color,fill,stroke,opacity,box-shadow,transform,translate,scale,rotate,filter,-webkit-backdrop-filter;transition-timing-function:var(--tw-ease,var(--default-transition-timing-function));transition-duration:var(--tw-duration,var(--default-transition-duration))}
+.duration-300{--tw-duration:.3s;transition-duration:.3s}
+@media (hover:hover){.hover\:grayscale-0:hover{filter:grayscale(0)}.hover\:opacity-100:hover{opacity:1}}
+@media (min-width:640px){.sm\:w-40{width:calc(var(--spacing) * 40)}.sm\:h-10{height:calc(var(--spacing) * 10)}}
+
+@keyframes tm-marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.tm-root .animate-marquee{animation:tm-marquee 32s linear infinite}
+.tm-root .animate-marquee:hover{animation-play-state:paused}
+@media (prefers-reduced-motion: reduce){.tm-root .animate-marquee{animation:none}}
+
+.tm-root * { box-sizing: border-box; }
+:where(.tm-root) $1 { display: block; max-width: none; }
+.tm-root :focus-visible { outline: 2px solid #C5222A; outline-offset: 2px; border-radius: 2px; }
+.tm-root { font-family: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; color: #161C24; line-height: 1.4; }
+</style>
+
+{%- assign root_id = 'TmTrust-' | append: section.id -%}
+
+<div class="tm-root" id="{{ root_id }}" data-tm-trust>
+  <section id="trust" class="py-2 bg-white border-b border-[#E8E4DA]">
+
+    <!-- Logo Marquee -->
+    <div class="relative overflow-hidden py-8">
+      <div class="pointer-events-none absolute inset-y-0 left-0 w-20 sm:w-40 bg-gradient-to-r from-white to-transparent z-10"></div>
+      <div class="pointer-events-none absolute inset-y-0 right-0 w-20 sm:w-40 bg-gradient-to-l from-white to-transparent z-10"></div>
+
+      {%- capture logo_items -%}
+        {%- if section.blocks.size > 0 -%}
+          {%- for block in section.blocks -%}{%- if block.settings.logo != blank -%}
+            <img
+              src="{{ block.settings.logo | image_url: width: 280 }}"
+              alt="{{ block.settings.name | escape }}" title="{{ block.settings.name | escape }}"
+              loading="lazy" decoding="async" {{ block.shopify_attributes }}
+              class="h-8 sm:h-10 w-auto max-w-[140px] shrink-0 object-contain grayscale opacity-60 transition duration-300 hover:grayscale-0 hover:opacity-100">
+          {%- endif -%}{%- endfor -%}
+        {%- else -%}
+          <img src="https://trophymart.co.in/wp-content/uploads/2024/07/wipro-1.png" alt="Wipro" title="Wipro" loading="lazy" decoding="async" class="h-8 sm:h-10 w-auto max-w-[140px] shrink-0 object-contain grayscale opacity-60 transition duration-300 hover:grayscale-0 hover:opacity-100">
+          <img src="https://trophymart.co.in/wp-content/uploads/2024/07/bennett-1.jpeg" alt="Bennett, Coleman &amp; Co." title="Bennett, Coleman &amp; Co." loading="lazy" decoding="async" class="h-8 sm:h-10 w-auto max-w-[140px] shrink-0 object-contain grayscale opacity-60 transition duration-300 hover:grayscale-0 hover:opacity-100">
+          <img src="https://trophymart.co.in/wp-content/uploads/2024/07/BOI-1.png" alt="Bank of India" title="Bank of India" loading="lazy" decoding="async" class="h-8 sm:h-10 w-auto max-w-[140px] shrink-0 object-contain grayscale opacity-60 transition duration-300 hover:grayscale-0 hover:opacity-100">
+          <img src="https://trophymart.co.in/wp-content/uploads/2024/07/cu-1.png" alt="Calcutta University" title="Calcutta University" loading="lazy" decoding="async" class="h-8 sm:h-10 w-auto max-w-[140px] shrink-0 object-contain grayscale opacity-60 transition duration-300 hover:grayscale-0 hover:opacity-100">
+          <img src="https://trophymart.co.in/wp-content/uploads/2024/07/hdfc-1.png" alt="HDFC" title="HDFC" loading="lazy" decoding="async" class="h-8 sm:h-10 w-auto max-w-[140px] shrink-0 object-contain grayscale opacity-60 transition duration-300 hover:grayscale-0 hover:opacity-100">
+        {%- endif -%}
+      {%- endcapture -%}
+
+      <div class="flex w-max animate-marquee">
+        {%- for half in (1..2) -%}
+          <div class="flex shrink-0 items-center gap-14 pr-14">
+            {{ logo_items }}{{ logo_items }}
+          </div>
+        {%- endfor -%}
+      </div>
+    </div>
+  </section>
+</div>
+
+{% schema %}
+{
+  "name": "Trophy Mart Trust Strip",
+  "settings": [],
+  "blocks": [
+    {
+      "type": "logo",
+      "name": "Logo",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "logo",
+          "label": "Client logo"
+        },
+        {
+          "type": "text",
+          "id": "name",
+          "label": "Client name",
+          "default": "Client name"
+        }
+      ]
+    }
+  ],
+  "max_blocks": 16,
+  "presets": [
+    {
+      "name": "Trophy Mart Trust Strip"
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,354 @@
+{% comment %}
+  Trophy Mart - Collection Product Grid with "Load more" (design mirrors CollectionPage.tsx).
+
+  PURE CSS. Upload ONLY sections/collection-grid.liquid.
+  Add to the COLLECTION template below the hero, and add the
+  "Collection Filters" section to the same template.
+
+  - Shows the real collection products (12 per page).
+  - "Filters" button opens the Collection Filters drawer (separate section).
+  - "Load More" appends the next page via Shopify's section rendering API -
+    no page reload.
+{% endcomment %}
+
+<style>
+.tm-cg, .tm-cg * { box-sizing: border-box; }
+.tm-cg { font-family: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; color: #161C24; line-height: 1.4; background: #fff; }
+:where(.tm-cg) :where(h2, h3, p) { margin: 0; padding: 0; }
+:where(.tm-cg) :where(a) { color: inherit; text-decoration: none; }
+:where(.tm-cg) :where(img) { display: block; border: 0; }
+:where(.tm-cg) :where(button) { font: inherit; color: inherit; background: none; border: 0; padding: 0; margin: 0; cursor: pointer; -webkit-appearance: none; appearance: none; }
+.tm-cg [hidden] { display: none !important; }
+
+.cg-wrap { max-width: 1280px; margin: 0 auto; padding: 48px 16px 64px; }
+
+.cg-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 20px; }
+.cg-count { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.18em; color: #64748B; }
+.cg-filter-btn { display: inline-flex; align-items: center; gap: 8px; height: 40px; padding: 0 16px; border: 1px solid rgba(14, 35, 62, 0.25); color: #0E233E; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.15em; transition: background-color 0.15s, color 0.15s; }
+.cg-filter-btn:hover { background: #0E233E; color: #fff; }
+.cg-filter-btn svg { width: 14px; height: 14px; }
+.cg-filter-badge { display: inline-flex; align-items: center; justify-content: center; min-width: 16px; height: 16px; padding: 0 4px; border-radius: 999px; background: #C5222A; color: #fff; font-size: 9px; font-weight: 700; }
+
+.cg-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+.cg-card { display: flex; flex-direction: column; background: #fff; border: 1px solid #E5E0D4; }
+.cg-media { position: relative; aspect-ratio: 3 / 5; background: #FAF9F5; overflow: hidden; }
+.cg-media img { position: absolute; inset: 0; width: 100%; height: 100%; max-width: none; object-fit: cover; object-position: center; transition: transform 0.5s; }
+.cg-card:hover .cg-media img { transform: scale(1.05); }
+.cg-media-fallback { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; }
+.cg-media-fallback svg { width: 60%; height: 60%; }
+.cg-badge { position: absolute; top: 0; left: 0; z-index: 10; background: #0E233E; color: #fff; font-size: 8px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.18em; padding: 6px 8px; }
+
+.cg-body { padding: 16px; display: flex; flex-direction: column; flex: 1; }
+.cg-cat { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.2em; color: #C59B27; }
+.cg-title { margin-top: 6px; font-family: 'Cormorant Garamond', Georgia, serif; font-size: 15px; font-weight: 700; line-height: 1.375; color: #0E233E; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.cg-meta { margin-top: 6px; font-size: 10px; letter-spacing: 0.025em; color: #94A3B8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cg-price-row { margin-top: auto; padding-top: 16px; display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+.cg-price { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 18px; font-weight: 700; color: #0E233E; font-variant-numeric: tabular-nums; }
+.cg-compare { font-size: 11px; color: #94A3B8; text-decoration: line-through; font-variant-numeric: tabular-nums; }
+
+.cg-empty { padding: 80px 16px; text-align: center; border: 1px solid #E5E0D4; }
+.cg-empty p { font-size: 14px; color: #64748B; }
+.cg-clear { display: inline-block; margin-top: 16px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #C5222A; text-decoration: underline; text-underline-offset: 4px; }
+
+.cg-more-wrap { display: flex; justify-content: center; margin-top: 32px; }
+.cg-more { display: inline-flex; align-items: center; gap: 8px; height: 44px; padding: 0 32px; border: 1px solid #0E233E; background: #fff; color: #0E233E; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.15em; transition: background-color 0.15s, color 0.15s; }
+.cg-more:hover { background: #0E233E; color: #fff; }
+.cg-more:disabled { opacity: 0.55; cursor: wait; }
+
+@media (min-width: 640px) {
+  .cg-wrap { padding: 64px 24px 80px; }
+  .cg-count { font-size: 11px; }
+  .cg-filter-btn { font-size: 11px; }
+  .cg-grid { gap: 20px; }
+  .cg-body { padding: 20px; }
+  .cg-title { font-size: 18px; }
+  .cg-meta { font-size: 11px; }
+  .cg-price { font-size: 20px; }
+}
+@media (min-width: 1024px) {
+  .cg-grid { grid-template-columns: repeat(4, 1fr); }
+}
+</style>
+
+{%- assign tm_collection = collection | default: section.settings.collection -%}
+
+{%- assign active_filters = 0 -%}
+{%- if tm_collection.filters.size > 0 -%}
+  {%- for filter in tm_collection.filters -%}
+    {%- if filter.type == 'price_range' -%}
+      {%- if filter.min_value.value != nil or filter.max_value.value != nil -%}
+        {%- assign active_filters = active_filters | plus: 1 -%}
+      {%- endif -%}
+    {%- else -%}
+      {%- assign active_filters = active_filters | plus: filter.active_values.size -%}
+    {%- endif -%}
+  {%- endfor -%}
+{%- endif -%}
+
+<div class="tm-cg" data-tm-collection-grid data-section-id="{{ section.id }}">
+  <div class="cg-wrap">
+
+    {%- if tm_collection == blank -%}
+      <div class="cg-empty"><p>Add this section to a collection template, or pick a collection in the section settings.</p></div>
+    {%- else -%}
+
+      {%- paginate tm_collection.products by 12 -%}
+        {%- assign child_cols = tm_collection.metafields.custom.child_category.value -%}
+        <div class="cg-toolbar">
+          <p class="cg-count" data-tm-count>
+            {{ tm_collection.products_count }}
+            {% if tm_collection.products_count == 1 %}Piece{% else %}Pieces{% endif %}
+          </p>
+
+          {%- if section.settings.show_filter_button -%}
+            <button type="button" class="cg-filter-btn" data-tm-open-filters>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="21" x2="14" y1="4" y2="4"></line><line x1="10" x2="3" y1="4" y2="4"></line><line x1="21" x2="12" y1="12" y2="12"></line><line x1="8" x2="3" y1="12" y2="12"></line><line x1="21" x2="16" y1="20" y2="20"></line><line x1="12" x2="3" y1="20" y2="20"></line><line x1="14" x2="14" y1="2" y2="6"></line><line x1="8" x2="8" y1="10" y2="14"></line><line x1="16" x2="16" y1="18" y2="22"></line></svg>
+              Filters
+              {%- if active_filters > 0 -%}<span class="cg-filter-badge">{{ active_filters }}</span>{%- endif -%}
+            </button>
+          {%- endif -%}
+        </div>
+
+        {%- if tm_collection.products.size == 0 -%}
+          <div class="cg-empty">
+            <p>No pieces match your filters.</p>
+            <a class="cg-clear" href="{{ tm_collection.url }}">Clear Filters</a>
+          </div>
+        {%- else -%}
+          <div class="cg-grid" data-tm-grid>
+            {%- for product in tm_collection.products -%}
+              {%- assign card_height = product.metafields.custom.height.value -%}
+              {%- if card_height == blank -%}
+                {%- assign card_height = product.selected_or_first_available_variant.metafields.custom.height.value -%}
+              {%- endif -%}
+              {%- assign card_children = '' -%}
+              {%- for child in child_cols -%}
+                {%- for cp in child.products -%}
+                  {%- if cp.id == product.id -%}
+                    {%- assign card_children = card_children | append: child.handle | append: ' ' -%}
+                    {%- break -%}
+                  {%- endif -%}
+                {%- endfor -%}
+              {%- endfor -%}
+              {%- assign card_sizes = '' -%}
+              {%- assign card_colors = '' -%}
+              {%- assign card_facets = '' -%}
+              {%- for opt in product.options_with_values -%}
+                {%- assign on = opt.name | downcase -%}
+                {%- if on contains 'size' -%}
+                  {%- for v in opt.values -%}
+                    {%- assign t = v | strip | downcase | replace: ' ', '-' -%}
+                    {%- assign card_sizes = card_sizes | append: t | append: ' ' -%}
+                  {%- endfor -%}
+                {%- endif -%}
+                {%- if on contains 'color' or on contains 'colour' -%}
+                  {%- for v in opt.values -%}
+                    {%- assign t = v | strip | downcase | replace: ' ', '-' -%}
+                    {%- assign card_colors = card_colors | append: t | append: ' ' -%}
+                  {%- endfor -%}
+                {%- endif -%}
+              {%- endfor -%}
+              {%- assign mf_keys = 'accessory;base_material;body_material;stand' | split: ';' -%}
+              {%- for mfk in mf_keys -%}
+                {%- assign mfv = product.metafields.custom[mfk].value -%}
+                {%- if mfv != blank -%}
+                  {%- assign token_list = '' -%}
+                  {%- for v in mfv -%}
+                    {%- assign t = v | strip | downcase | replace: ' ', '-' -%}
+                    {%- assign token_list = token_list | append: t | append: ' ' -%}
+                  {%- endfor -%}
+                  {%- assign card_facets = card_facets | append: mfk | append: ':' | append: token_list | strip | append: ';' -%}
+                {%- endif -%}
+              {%- endfor -%}
+              <a class="cg-card" href="{{ product.url }}" data-child="{{ card_children | strip }}" data-sizes="{{ card_sizes | strip }}" data-colors="{{ card_colors | strip }}" data-facets="{{ card_facets }}">
+                <div class="cg-media">
+                  {%- if product.featured_image -%}
+                    <img src="{{ product.featured_image | image_url: width: 600 }}" alt="{{ product.title | escape }}" loading="lazy" draggable="false">
+                  {%- else -%}
+                    <span class="cg-media-fallback">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="#B98A2E" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 21h8"></path><path d="M12 21v-6"></path><path d="M7 3h10v6a5 5 0 0 1-10 0V3Z"></path><path d="M7 5H4v2a3 3 0 0 0 3 3"></path><path d="M17 5h3v2a3 3 0 0 1-3 3"></path></svg>
+                    </span>
+                  {%- endif -%}
+                </div>
+
+                <div class="cg-body">
+                  <p class="cg-cat">{{ product.type | default: 'Trophy Mart' }}</p>
+                  <h2 class="cg-title">{{ product.title }}</h2>
+                  {%- if card_height != blank -%}
+                    <p class="cg-meta">{{ card_height }}</p>
+                  {%- endif -%}
+
+                  <div class="cg-price-row">
+                    <span class="cg-price">{{ product.price | money }}</span>
+                    {%- if product.compare_at_price > product.price -%}
+                      <span class="cg-compare">{{ product.compare_at_price | money }}</span>
+                    {%- endif -%}
+                  </div>
+                </div>
+              </a>
+            {%- endfor -%}
+          </div>
+
+          {%- if paginate.pages > 1 -%}
+            <div class="cg-more-wrap">
+              <button type="button" class="cg-more" data-tm-loadmore
+                data-next-url="{% if paginate.next %}{{ paginate.next.url }}{% endif %}"
+                {% unless paginate.next %}hidden{% endunless %}>
+                {{ section.settings.load_more_label }}
+              </button>
+            </div>
+          {%- endif -%}
+        {%- endif -%}
+      {%- endpaginate -%}
+
+    {%- endif -%}
+  </div>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  function initRoot(root) {
+    if (root.getAttribute('data-tm-init') === '1') return;
+    root.setAttribute('data-tm-init', '1');
+
+    var sectionId = root.getAttribute('data-section-id');
+    var grid = root.querySelector('[data-tm-grid]');
+    var btn = root.querySelector('[data-tm-loadmore]');
+    if (!grid) return;
+
+    /* ---------- Facet filtering (category + size + color, in place) ---------- */
+    var activeFacets = { children: [], sizes: [], colors: [] };
+    var countEl = root.querySelector('[data-tm-count]');
+
+    function applyFacets(facets) {
+      activeFacets = facets || {};
+      var visible = 0;
+      Array.prototype.slice.call(grid.children).forEach(function (card) {
+        var kids = (card.getAttribute('data-child') || '').split(' ').filter(Boolean);
+        var sizes = (card.getAttribute('data-sizes') || '').split(' ').filter(Boolean);
+        var colors = (card.getAttribute('data-colors') || '').split(' ').filter(Boolean);
+        var extraRaw = card.getAttribute('data-facets') || '';
+        var extra = {};
+        extraRaw.split(';').forEach(function (chunk) {
+          var bits = chunk.split(':');
+          if (bits.length === 2 && bits[0]) {
+            extra[bits[0]] = bits[1].split(' ').filter(Boolean);
+          }
+        });
+
+        function anyOf(list, wanted) {
+          return wanted.some(function (v) { return list.indexOf(v) > -1; });
+        }
+
+        var match = true;
+        Object.keys(activeFacets).forEach(function (key) {
+          var wanted = activeFacets[key] || [];
+          if (!wanted.length) return;
+          var have = key === 'children' ? kids : (key === 'sizes' ? sizes : (key === 'colors' ? colors : (extra[key] || [])));
+          if (!anyOf(have, wanted)) match = false;
+        });
+
+        card.hidden = !match;
+        if (match) visible++;
+      });
+      if (countEl) {
+        countEl.textContent = visible + (visible === 1 ? ' Piece' : ' Pieces');
+      }
+    }
+
+    document.addEventListener('tm:filters', function (e) {
+      applyFacets(e.detail || {});
+    });
+
+    /* Backwards compatible single-purpose event */
+    document.addEventListener('tm:child-filter', function (e) {
+      var detail = e.detail || {};
+      applyFacets({ children: detail.handles || [], sizes: [], colors: [] });
+    });
+
+    if (!btn) return;
+
+    btn.addEventListener('click', function () {
+      var url = btn.getAttribute('data-next-url');
+      if (!url) return;
+      btn.disabled = true;
+      var sep = url.indexOf('?') > -1 ? '&' : '?';
+
+      fetch(url + sep + 'section_id=' + sectionId)
+        .then(function (r) { return r.text(); })
+        .then(function (html) {
+          var doc = new DOMParser().parseFromString(html, 'text/html');
+          var newGrid = doc.querySelector('[data-tm-grid]');
+          var newBtn = doc.querySelector('[data-tm-loadmore]');
+
+          if (newGrid) {
+            Array.prototype.slice.call(newGrid.children).forEach(function (card) {
+              grid.appendChild(card);
+            });
+            if (Object.keys(activeFacets).some(function (k) { return (activeFacets[k] || []).length; })) {
+              applyFacets(activeFacets);
+            }
+          }
+
+          var nextUrl = newBtn ? newBtn.getAttribute('data-next-url') : '';
+          if (nextUrl) {
+            btn.setAttribute('data-next-url', nextUrl);
+            btn.disabled = false;
+          } else {
+            btn.parentNode.removeChild(btn);
+          }
+        })
+        .catch(function () {
+          btn.disabled = false;
+        });
+    });
+  }
+
+  function initAll() {
+    Array.prototype.forEach.call(document.querySelectorAll('[data-tm-collection-grid]'), initRoot);
+  }
+
+  document.addEventListener('shopify:section:load', function (e) {
+    var root = document.querySelector('[data-tm-collection-grid][data-section-id="' + e.detail.sectionId + '"]');
+    if (root) initRoot(root);
+  });
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initAll);
+  } else {
+    initAll();
+  }
+})();
+</script>
+
+{% schema %}
+{
+  "name": "Collection Product Grid",
+  "settings": [
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Collection (for preview outside collection pages)"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_filter_button",
+      "label": "Show Filters button",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "load_more_label",
+      "label": "Load more label",
+      "default": "Load More"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Collection Product Grid"
+    }
+  ]
+}
+{% endschema %}

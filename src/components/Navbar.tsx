@@ -232,7 +232,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   return (
     <>
       <header
-        className="relative z-40 w-full py-2.5 sm:py-4 bg-white border-b border-[#EAE6DF] shadow-[0_2px_12px_rgba(0,0,0,0.04)]"
+        className="relative z-40 w-full py-2.5 sm:py-4 bg-white/75 backdrop-blur-xl border-b border-[#E5E0D4]/70 shadow-[0_2px_12px_rgba(0,0,0,0.04)]"
       >
         <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 flex items-center justify-between gap-2.5 sm:gap-3">
           
@@ -547,7 +547,7 @@ export const Navbar: React.FC<NavbarProps> = ({
       {mobileMenuOpen && (
         <div className="fixed inset-0 z-50 md:hidden bg-[#0E233E] text-white overflow-y-auto animate-in fade-in duration-200">
           {/* Overlay Header */}
-          <div className="flex items-center justify-between px-5 py-4 border-b border-white/10">
+          <div className="flex items-center justify-between px-5 py-4 bg-white border-b border-[#E5E0D4]">
             <a
               href="#"
               onClick={scrollToTop}
@@ -556,14 +556,14 @@ export const Navbar: React.FC<NavbarProps> = ({
               <img
                 src="https://trophymart.co.in/wp-content/uploads/2024/07/TROPHY-MART-1-removebg-preview.png"
                 alt="Trophy Mart Logo"
-                className="h-10 w-auto object-contain brightness-0 invert"
+                className="h-10 w-auto object-contain"
                 referrerPolicy="no-referrer"
               />
             </a>
             <button
               onClick={() => setMobileMenuOpen(false)}
               aria-label="Close Navigation Menu"
-              className="p-2 rounded-lg bg-white/10 hover:bg-white/20 transition-colors"
+              className="p-2 rounded-lg bg-[#0E233E]/5 text-[#0E233E] hover:bg-[#0E233E]/10 transition-colors"
             >
               <X className="w-6 h-6" />
             </button>

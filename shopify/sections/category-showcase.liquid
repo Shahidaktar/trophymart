@@ -1,0 +1,256 @@
+﻿{% comment %}
+  Trophy Mart Ã¢â‚¬â€ Category Showcase carousel (mirrors src/components/CategoryShowcase.tsx).
+
+  Self-contained. Upload ONLY sections/category-showcase.liquid.
+
+  Cards are section blocks ("Category card": title, image, link). While no
+  blocks are added, the five built-in Trophy Mart categories are shown with
+  a signature gold trophy icon placeholder. Auto-slides every 3.5s, pauses
+  on hover/touch and when off-screen, like the React design.
+{% endcomment %}
+
+<style>
+/*! tailwindcss v4.3.4 | MIT License | https://tailwindcss.com */
+@import "https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&family=Manrope:wght@400;500;600;700;800&display=swap";
+:root,:host{--font-serif:"Cormorant Garamond", Georgia, serif;--spacing:4px;--container-7xl:1280px;--text-base:16px;--text-base--line-height:24px;--text-lg:18px;--text-lg--line-height:28px;--text-4xl:2.25rem;--text-4xl--line-height:2.5rem;--text-5xl:3rem;--text-5xl--line-height:1;--text-6xl:3.75rem;--text-6xl--line-height:1;--font-weight-medium:500;--font-weight-bold:700;--tracking-tight:-.025em;--leading-snug:1.375;--default-transition-duration:.15s;--default-transition-timing-function:cubic-bezier(.4, 0, .2, 1)}
+.relative{position:relative}.absolute{position:absolute}
+.mx-auto{margin-inline:auto}.-my-2{margin-block:calc(var(--spacing) * -2)}.mb-8{margin-bottom:calc(var(--spacing) * 8)}
+.p-5{padding:calc(var(--spacing) * 5)}.py-2{padding-block:calc(var(--spacing) * 2)}.py-16{padding-block:calc(var(--spacing) * 16)}.px-4{padding-inline:calc(var(--spacing) * 4)}
+.gap-5{gap:calc(var(--spacing) * 5)}.gap-3{gap:calc(var(--spacing) * 3)}
+.flex{display:flex}.flex-col{flex-direction:column}
+.items-center{align-items:center}.items-end{align-items:flex-end}.justify-between{justify-content:space-between}
+.shrink-0{flex-shrink:0}.cursor-pointer{cursor:pointer}
+.w-full{width:100%}.w-4{width:calc(var(--spacing) * 4)}.h-4{height:calc(var(--spacing) * 4)}.w-10{width:calc(var(--spacing) * 10)}.h-10{height:calc(var(--spacing) * 10)}
+.max-w-7xl{max-width:var(--container-7xl)}.max-w-\[210px\]{max-width:210px}
+.aspect-square{aspect-ratio:1}
+.rounded-full{border-radius:2147483647px}
+.overflow-hidden{overflow:hidden}.overflow-x-auto{overflow-x:auto}
+.no-scrollbar{-ms-overflow-style:none;scrollbar-width:none}
+.no-scrollbar::-webkit-scrollbar{display:none}
+.snap-start{scroll-snap-align:start}.snap-x{scroll-snap-type:x mandatory}.scroll-smooth{scroll-behavior:smooth}
+.text-center{text-align:center}
+.font-serif{font-family:var(--font-serif)}
+.text-base{font-size:var(--text-base);line-height:var(--tw-leading,var(--text-base--line-height))}.text-lg{font-size:var(--text-lg);line-height:var(--tw-leading,var(--text-lg--line-height))}.text-4xl{font-size:var(--text-4xl);line-height:var(--tw-leading,var(--text-4xl--line-height))}
+.font-medium{--tw-font-weight:var(--font-weight-medium);font-weight:var(--font-weight-medium)}.font-bold{--tw-font-weight:var(--font-weight-bold);font-weight:var(--font-weight-bold)}
+.leading-\[1\.02\]{--tw-leading:1.02;line-height:1.02}.leading-snug{--tw-leading:var(--leading-snug);line-height:var(--leading-snug)}
+.tracking-tight{--tw-tracking:var(--tracking-tight);letter-spacing:var(--tracking-tight)}
+.italic{font-style:italic}.whitespace-nowrap{white-space:nowrap}
+.bg-white{background-color:#fff}.bg-\[\#070D18\]{background-color:#070d18}.bg-\[\#F4F1EA\]{background-color:#f4f1ea}
+.text-\[\#0E233E\]{color:#0e233e}.text-\[\#C5222A\]{color:#c5222a}.text-white{color:#fff}
+.border{border-style:solid;border-width:1px}.border-b{border-bottom-style:solid;border-bottom-width:1px}
+.border-\[\#E8E4DA\]{border-color:#e8e4da}.border-white\/10{border-color:#ffffff1a}
+.border-\[\#0E233E\]\/25{border-color:rgba(14,35,62,.25)}
+.object-cover{object-fit:cover}.object-contain{object-fit:contain}
+.transition-colors{transition-property:color,background-color,border-color,outline-color,text-decoration-color,fill,stroke;transition-timing-function:var(--tw-ease,var(--default-transition-timing-function));transition-duration:var(--tw-duration,var(--default-transition-duration))}
+.transition-transform{transition-property:transform,translate,scale,rotate;transition-timing-function:var(--tw-ease,var(--default-transition-timing-function));transition-duration:var(--tw-duration,var(--default-transition-duration))}
+.duration-300{--tw-duration:.3s;transition-duration:.3s}
+.hover\:-translate-y-1{translate:0 0}
+@media (hover:hover){
+  .hover\:bg-\[\#0E233E\]:hover{background-color:#0e233e}
+  .hover\:text-white:hover{color:#fff}
+  .hover\:-translate-y-1:hover{translate:0 calc(var(--spacing) * -1)}
+}
+@media (min-width:640px){.sm\:px-6{padding-inline:calc(var(--spacing) * 6)}.sm\:py-20{padding-block:calc(var(--spacing) * 20)}.sm\:mb-10{margin-bottom:calc(var(--spacing) * 10)}.sm\:flex-row{flex-direction:row}.sm\:items-end{align-items:flex-end}.sm\:justify-between{justify-content:space-between}.sm\:p-6{padding:calc(var(--spacing) * 6)}.sm\:w-11{width:calc(var(--spacing) * 11)}.sm\:h-11{height:calc(var(--spacing) * 11)}.sm\:w-\[calc\(50\%-0\.625rem\)\]{width:calc(50% - 0.625rem)}.sm\:text-lg{font-size:var(--text-lg);line-height:var(--tw-leading,var(--text-lg--line-height))}.sm\:text-5xl{font-size:var(--text-5xl);line-height:var(--tw-leading,var(--text-5xl--line-height))}}
+@media (min-width:1024px){.lg\:px-8{padding-inline:calc(var(--spacing) * 8)}.lg\:w-\[calc\(33\.333\%-0\.834rem\)\]{width:calc(33.333% - 0.834rem)}.lg\:text-6xl{font-size:var(--text-6xl);line-height:var(--tw-leading,var(--text-6xl--line-height))}.lg\:whitespace-nowrap{white-space:nowrap}}
+@media (min-width:1280px){.xl\:w-\[calc\(25\%-0\.9375rem\)\]{width:calc(25% - 0.9375rem)}}
+
+.tm-root * { box-sizing: border-box; }
+.tm-root *::before, .tm-root *::after { box-sizing: inherit; }
+:where(.tm-root) :is(h1, h2, h3, h4, h5, h6, p, ul, figure, blockquote) { margin: 0; padding: 0; }
+:where(.tm-root) $1 { text-decoration: none; color: inherit; }
+:where(.tm-root) $1 { display: block; max-width: none; }
+:where(.tm-root) $1 { font: inherit; cursor: pointer; background: transparent; border: 0; padding: 0; -webkit-appearance: none; appearance: none; color: inherit; }
+.tm-root :focus-visible { outline: 2px solid #C5222A; outline-offset: 2px; border-radius: 2px; }
+.tm-root { font-family: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; color: #161C24; line-height: 1.4; }
+</style>
+
+{%- assign root_id = 'TmCat-' | append: section.id -%}
+
+{%- capture category_fallback_titles -%}Fibre Trophy;Metal Corporate Awards;Wooden Memento;Medals;Badges{%- endcapture -%}
+{%- assign category_fallback_items = category_fallback_titles | split: ';' -%}
+
+<div class="tm-root" id="{{ root_id }}" data-tm-cats>
+  <section id="collections" class="relative overflow-hidden bg-white border-b border-[#E8E4DA] py-16 sm:py-20">
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+      <!-- Header -->
+      <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-5 mb-8 sm:mb-10">
+        <h2 class="font-serif text-4xl sm:text-5xl lg:text-6xl font-bold text-[#0E233E] tracking-tight leading-[1.02] lg:whitespace-nowrap">
+          Shopping <span class="italic text-[#C5222A]">by Category</span>
+        </h2>
+
+        <div class="flex shrink-0 gap-3">
+          <button type="button" data-tm-cat-prev aria-label="Previous categories"
+            class="w-10 h-10 sm:w-11 sm:h-11 border border-[#0E233E]/25 bg-white flex items-center justify-center text-[#0E233E] transition-colors hover:bg-[#0E233E] hover:text-white">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4" aria-hidden="true"><path d="m12 19-7-7 7-7"></path><path d="M19 12H5"></path></svg>
+          </button>
+          <button type="button" data-tm-cat-next aria-label="Next categories"
+            class="w-10 h-10 sm:w-11 sm:h-11 border border-[#0E233E]/25 bg-white flex items-center justify-center text-[#0E233E] transition-colors hover:bg-[#0E233E] hover:text-white">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4" aria-hidden="true"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Carousel -->
+      <div class="no-scrollbar flex gap-5 overflow-x-auto scroll-smooth snap-x snap-mandatory py-2 -my-2" data-tm-track>
+        {%- if section.blocks.size > 0 -%}
+          {%- for block in section.blocks -%}
+            {%- if block.settings.title != blank or block.settings.image != blank -%}
+              <a href="{{ block.settings.link | default: routes.all_products_collection_url }}" data-card
+                class="snap-start shrink-0 w-[78%] sm:w-[calc(50%-0.625rem)] lg:w-[calc(33.333%-0.834rem)] xl:w-[calc(25%-0.9375rem)] cursor-pointer bg-[#070D18] border border-white/10 p-5 sm:p-6 flex flex-col items-center gap-5 transition-transform duration-300 hover:-translate-y-1"
+                {{ block.shopify_attributes }}>
+                <div class="relative aspect-square w-full max-w-[210px] rounded-full overflow-hidden bg-[#F4F1EA]">
+                  {%- if block.settings.image != blank -%}
+                    <img src="{{ block.settings.image | image_url: width: 480 }}" alt="{{ block.settings.title | escape }}" loading="lazy" decoding="async" class="h-full w-full object-cover">
+                  {%- else -%}
+                    <span class="h-full w-full flex items-center justify-center">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="#B98A2E" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" class="w-1/2 h-1/2" aria-hidden="true"><path d="M8 21h8"></path><path d="M12 21v-6"></path><path d="M7 3h10v6a5 5 0 0 1-10 0V3Z"></path><path d="M7 5H4v2a3 3 0 0 0 3 3"></path><path d="M17 5h3v2a3 3 0 0 1-3 3"></path></svg>
+                    </span>
+                  {%- endif -%}
+                </div>
+                <h3 class="text-center text-base sm:text-lg font-medium text-white leading-snug">{{ block.settings.title }}</h3>
+              </a>
+            {%- endif -%}
+          {%- endfor -%}
+        {%- else -%}
+          {%- for title in category_fallback_items -%}
+            <a href="{{ routes.search_url }}?q={{ title | url_encode }}&amp;type=product" data-card
+              class="snap-start shrink-0 w-[78%] sm:w-[calc(50%-0.625rem)] lg:w-[calc(33.333%-0.834rem)] xl:w-[calc(25%-0.9375rem)] cursor-pointer bg-[#070D18] border border-white/10 p-5 sm:p-6 flex flex-col items-center gap-5 transition-transform duration-300 hover:-translate-y-1">
+              <div class="relative aspect-square w-full max-w-[210px] rounded-full overflow-hidden bg-[#F4F1EA]">
+                <span class="h-full w-full flex items-center justify-center">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="#B98A2E" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" class="w-1/2 h-1/2" aria-hidden="true"><path d="M8 21h8"></path><path d="M12 21v-6"></path><path d="M7 3h10v6a5 5 0 0 1-10 0V3Z"></path><path d="M7 5H4v2a3 3 0 0 0 3 3"></path><path d="M17 5h3v2a3 3 0 0 1-3 3"></path></svg>
+                </span>
+              </div>
+              <h3 class="text-center text-base sm:text-lg font-medium text-white leading-snug">{{ title }}</h3>
+            </a>
+          {%- endfor -%}
+        {%- endif -%}
+      </div>
+    </div>
+  </section>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  var AUTO_MS = 3500;
+  var registry = [];
+
+  function attachTrack(root, track) {
+    var paused = false;
+    var visible = true;
+    var timer = null;
+
+    function step() {
+      var card = track.querySelector('[data-card]') || track.firstElementChild;
+      var gap = parseFloat(getComputedStyle(track).columnGap || '0') || 0;
+      return card ? card.offsetWidth + gap : track.clientWidth * 0.8;
+    }
+
+    function advance() {
+      if (paused || !visible) return;
+      var atEnd = track.scrollLeft + track.clientWidth >= track.scrollWidth - 4;
+      track.scrollTo({ left: atEnd ? 0 : track.scrollLeft + step(), behavior: 'smooth' });
+    }
+
+    function scrollByCard(direction) {
+      track.scrollBy({ left: direction * step(), behavior: 'smooth' });
+    }
+
+    var prev = root.querySelector('[data-tm-cat-prev]');
+    var next = root.querySelector('[data-tm-cat-next]');
+    if (prev) prev.addEventListener('click', function () { scrollByCard(-1); });
+    if (next) next.addEventListener('click', function () { scrollByCard(1); });
+
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    timer = window.setInterval(advance, AUTO_MS);
+    registry.push({ root: root, timer: timer, track: track });
+
+    track.addEventListener('pointerenter', function () { paused = true; });
+    track.addEventListener('pointerleave', function () { paused = false; });
+    track.addEventListener('touchstart', function () { paused = true; }, { passive: true });
+    track.addEventListener('touchend', function () { paused = false; });
+
+    if (typeof IntersectionObserver !== 'undefined') {
+      var observer = new IntersectionObserver(function (entries) {
+        visible = entries[0].isIntersecting;
+      }, { threshold: 0.25 });
+      observer.observe(track);
+      registry.push({ root: root, timer: null, observer: observer });
+    }
+  }
+
+  function initRoot(root) {
+    if (root.getAttribute('data-tm-init') === '1') return;
+    root.setAttribute('data-tm-init', '1');
+    var track = root.querySelector('[data-tm-track]');
+    if (track) attachTrack(root, track);
+  }
+
+  function initAll() {
+    Array.prototype.forEach.call(document.querySelectorAll('[data-tm-cats]'), initRoot);
+  }
+
+  document.addEventListener('shopify:section:load', function (e) {
+    var root = document.getElementById('TmCat-' + e.detail.sectionId);
+    if (root) initRoot(root);
+  });
+
+  document.addEventListener('shopify:section:unload', function (e) {
+    var id = 'TmCat-' + e.detail.sectionId;
+    registry = registry.filter(function (entry) {
+      if (entry.root.id === id || !entry.root.isConnected) {
+        if (entry.timer) window.clearInterval(entry.timer);
+        if (entry.observer) entry.observer.disconnect();
+        return false;
+      }
+      return true;
+    });
+  });
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initAll);
+  } else {
+    initAll();
+  }
+})();
+</script>
+
+{% schema %}
+{
+  "name": "Trophy Mart Category Showcase",
+  "settings": [],
+  "blocks": [
+    {
+      "type": "card",
+      "name": "Category card",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Category name"
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image (shown in the round frame)"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Link"
+        }
+      ]
+    }
+  ],
+  "max_blocks": 12,
+  "presets": [
+    {
+      "name": "Trophy Mart Category Showcase"
+    }
+  ]
+}
+{% endschema %}

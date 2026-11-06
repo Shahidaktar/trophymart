@@ -1,0 +1,211 @@
+﻿{% comment %}
+  Trophy Mart â€” FAQ section (mirrors src/components/FaqSection.tsx).
+
+  Self-contained. Upload ONLY sections/faq.liquid.
+
+  Questions/answers are section blocks ("FAQ" block each). While no blocks
+  are added, the five built-in Trophy Mart FAQs are shown. One item is open
+  at a time; the first is open by default, exactly like the React design.
+{% endcomment %}
+
+<style>
+/*! tailwindcss v4.3.4 | MIT License | https://tailwindcss.com */
+@import "https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&family=Manrope:wght@400;500;600;700;800&display=swap";
+:root,:host{--font-serif:"Cormorant Garamond", Georgia, serif;--spacing:4px;--container-7xl:1280px;--text-xs:12px;--text-xs--line-height:16px;--text-sm:14px;--text-sm--line-height:20px;--text-base:16px;--text-base--line-height:24px;--text-lg:18px;--text-lg--line-height:28px;--text-4xl:2.25rem;--text-4xl--line-height:2.5rem;--text-5xl:3rem;--text-5xl--line-height:1;--text-6xl:3.75rem;--text-6xl--line-height:1;--font-weight-semibold:600;--font-weight-bold:700;--tracking-tight:-.025em;--tracking-wider:.05em;--leading-relaxed:1.625;--default-transition-duration:.15s;--default-transition-timing-function:cubic-bezier(.4, 0, .2, 1)}
+.mx-auto{margin-inline:auto}.mt-4{margin-top:calc(var(--spacing) * 4)}.mt-10{margin-top:calc(var(--spacing) * 10)}.mb-12{margin-bottom:calc(var(--spacing) * 12)}
+.p-4{padding:calc(var(--spacing) * 4)}.px-4{padding-inline:calc(var(--spacing) * 4)}.px-8{padding-inline:calc(var(--spacing) * 8)}.py-3\.5{padding-block:calc(var(--spacing) * 3.5)}.py-20{padding-block:calc(var(--spacing) * 20)}
+.space-y-3\.5>*+*{margin-top:calc(var(--spacing) * 3.5)}
+.flex{display:flex}.inline-flex{display:inline-flex}.hidden{display:none}
+.flex-col{flex-direction:column}
+.items-center{align-items:center}.justify-center{justify-content:center}.justify-between{justify-content:space-between}
+.w-full{width:100%}.w-4{width:calc(var(--spacing) * 4)}.h-4{height:calc(var(--spacing) * 4)}
+.max-w-7xl{max-width:var(--container-7xl)}
+.text-left{text-align:left}
+.font-serif{font-family:var(--font-serif)}
+.text-xs{font-size:var(--text-xs);line-height:var(--tw-leading,var(--text-xs--line-height))}.text-sm{font-size:var(--text-sm);line-height:var(--tw-leading,var(--text-sm--line-height))}.text-base{font-size:var(--text-base);line-height:var(--tw-leading,var(--text-base--line-height))}.text-lg{font-size:var(--text-lg);line-height:var(--tw-leading,var(--text-lg--line-height))}.text-4xl{font-size:var(--text-4xl);line-height:var(--tw-leading,var(--text-4xl--line-height))}
+.font-semibold{--tw-font-weight:var(--font-weight-semibold);font-weight:var(--font-weight-semibold)}.font-bold{--tw-font-weight:var(--font-weight-bold);font-weight:var(--font-weight-bold)}
+.leading-\[1\.02\]{--tw-leading:1.02;line-height:1.02}.leading-relaxed{--tw-leading:var(--leading-relaxed);line-height:var(--leading-relaxed)}
+.tracking-tight{--tw-tracking:var(--tracking-tight);letter-spacing:var(--tracking-tight)}.tracking-wider{--tw-tracking:var(--tracking-wider);letter-spacing:var(--tracking-wider)}
+.uppercase{text-transform:uppercase}.italic{font-style:italic}
+.bg-white{background-color:#fff}.bg-\[\#FAF9F5\]{background-color:#faf9f5}.bg-\[\#0E233E\]{background-color:#0e233e}
+.text-\[\#0E233E\]{color:#0e233e}.text-\[\#C5222A\]{color:#c5222a}.text-\[\#475569\]{color:#475569}.text-white{color:#fff}
+.border{border-style:solid;border-width:1px}.border-t{border-top-style:solid;border-top-width:1px}
+.border-\[\#E5E0D4\]{border-color:#e5e0d4}.border-\[\#E8E4DA\]{border-color:#e8e4da}
+.overflow-hidden{overflow:hidden}
+.rotate-180{rotate:180deg}
+.shadow-sm{box-shadow:0 1px 2px 0 rgba(0,0,0,.05)}
+.transition-all{transition-property:all;transition-timing-function:var(--tw-ease,var(--default-transition-timing-function));transition-duration:var(--tw-duration,var(--default-transition-duration))}
+.transition-colors{transition-property:color,background-color,border-color,outline-color,text-decoration-color,fill,stroke;transition-timing-function:var(--tw-ease,var(--default-transition-timing-function));transition-duration:var(--tw-duration,var(--default-transition-duration))}
+.transition-transform{transition-property:transform,translate,scale,rotate;transition-timing-function:var(--tw-ease,var(--default-transition-timing-function));transition-duration:var(--tw-duration,var(--default-transition-duration))}
+.duration-200{--tw-duration:.2s;transition-duration:.2s}
+@media (hover:hover){
+  .hover\:bg-\[\#F3F0E8\]:hover{background-color:#f3f0e8}
+  .hover\:bg-\[\#163359\]:hover{background-color:#163359}
+  .hover\:shadow:hover{box-shadow:0 1px 3px 0 rgba(0,0,0,.1),0 1px 2px -1px rgba(0,0,0,.1)}
+  .group:hover .group-hover\:translate-x-1{translate:4px 0}
+}
+@media (min-width:640px){.sm\:p-5{padding:calc(var(--spacing) * 5)}.sm\:px-6{padding-inline:calc(var(--spacing) * 6)}.sm\:mt-12{margin-top:calc(var(--spacing) * 12)}.sm\:mb-16{margin-bottom:calc(var(--spacing) * 16)}.sm\:text-sm{font-size:var(--text-sm);line-height:var(--tw-leading,var(--text-sm--line-height))}.sm\:text-lg{font-size:var(--text-lg);line-height:var(--tw-leading,var(--text-lg--line-height))}.sm\:text-5xl{font-size:var(--text-5xl);line-height:var(--tw-leading,var(--text-5xl--line-height))}}
+@media (min-width:1024px){.lg\:px-8{padding-inline:calc(var(--spacing) * 8)}.lg\:text-6xl{font-size:var(--text-6xl);line-height:var(--tw-leading,var(--text-6xl--line-height))}.lg\:whitespace-nowrap{white-space:nowrap}}
+
+.tm-root * { box-sizing: border-box; }
+.tm-root *::before, .tm-root *::after { box-sizing: inherit; }
+:where(.tm-root) :is(h1, h2, h3, h4, h5, h6, p, ul, figure, blockquote) { margin: 0; padding: 0; }
+:where(.tm-root) $1 { text-decoration: none; color: inherit; }
+:where(.tm-root) $1 { display: block; max-width: none; }
+:where(.tm-root) $1 { font: inherit; cursor: pointer; background: transparent; border: 0; padding: 0; -webkit-appearance: none; appearance: none; color: inherit; text-align: inherit; }
+.tm-root [hidden] { display: none !important; }
+.tm-root :focus-visible { outline: 2px solid #C5222A; outline-offset: 2px; border-radius: 2px; }
+.tm-root { font-family: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; color: #161C24; line-height: 1.4; }
+</style>
+
+{%- assign root_id = 'TmFaq-' | append: section.id -%}
+
+{%- capture faq_fallback -%}
+Can I customize trophies with our company logo and individual recipient names?~Absolutely. Every trophy, plaque, and medal we produce can be customized with high-resolution vector logos, personalized recipient names, designation titles, and event dates. We support laser surface etching, 3D sub-surface laser crystal engraving, direct full-color UV cure printing, and diamond-drag metal marking.;
+How fast can you deliver urgent bulk orders across India?~We manufacture and assemble in-house, eliminating middleman delays. In-stock catalog awards with custom engraving are dispatched in 24 to 48 hours. Custom sculpted or cast awards typically require 3 to 5 working days. We ship via express air cargo with real-time tracking to 66+ cities nationwide.;
+What materials do you specialize in?~Our state-of-the-art facility crafts in premium optical K9 crystal, imported cast acrylic, 24k electroplated brass and bronze, sculptural fiber-resin composites, and natural hand-buffed hardwoods (such as African Mahogany and American Walnut).;
+Can we receive a digital 3D proof or sample before placing a volume order?~Yes. Before manufacturing commences on custom awards, our senior design team renders a detailed 2D/3D digital visual proof showing precise dimensions, typography placement, and logo alignment for your team's formal sign-off.;
+Are there wholesale volume discounts for corporate and tournament bulk orders?~Yes. As a direct factory manufacturer, we offer tiered volume pricing starting from 10 units up to 10,000+ units. Discounts range from 12% to over 40% off standard catalog rates. You can request a tailored GST quotation through our Bulk Quotation tool.
+{%- endcapture -%}
+{%- assign faq_fallback_items = faq_fallback | split: ';' -%}
+
+<div class="tm-root" id="{{ root_id }}" data-tm-faq>
+  <section class="py-20 bg-white border-b border-[#E8E4DA]">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+      <!-- Section Header -->
+      <div class="mb-12 sm:mb-16">
+        <h2 class="font-serif text-4xl sm:text-5xl lg:text-6xl font-bold text-[#0E233E] mt-4 leading-[1.02] tracking-tight lg:whitespace-nowrap">
+          Frequently Asked
+          <span class="italic text-[#C5222A]">Questions</span>
+        </h2>
+      </div>
+
+      <!-- Accordion List -->
+      <div class="space-y-3.5">
+        {%- if section.blocks.size > 0 -%}
+          {%- for block in section.blocks -%}
+            {%- if block.settings.question != blank -%}
+              <div class="border border-[#E5E0D4] overflow-hidden transition-all duration-200" data-tm-faq-item {{ block.shopify_attributes }}>
+                <button type="button" data-tm-faq-q
+                  class="w-full p-4 sm:p-5 text-left bg-[#FAF9F5] hover:bg-[#F3F0E8] transition-colors flex items-center justify-between gap-4">
+                  <span class="font-serif text-base sm:text-lg font-bold text-[#0E233E]">{{ block.settings.question }}</span>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-tm-faq-icon
+                    class="w-4 h-4 text-[#0E233E] shrink-0 transition-transform duration-200 {% if forloop.first %}rotate-180 text-[#C5222A]{% endif %}" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg>
+                </button>
+                <div data-tm-faq-a class="p-4 sm:p-5 bg-white text-xs sm:text-sm text-[#475569] leading-relaxed border-t border-[#E8E4DA]" {% unless forloop.first %}hidden{% endunless %}>{{ block.settings.answer | escape | newline_to_br }}</div>
+              </div>
+            {%- endif -%}
+          {%- endfor -%}
+        {%- else -%}
+          {%- for faq in faq_fallback_items -%}
+            {%- assign faq_parts = faq | split: '~' -%}
+            <div class="border border-[#E5E0D4] overflow-hidden transition-all duration-200" data-tm-faq-item>
+              <button type="button" data-tm-faq-q
+                class="w-full p-4 sm:p-5 text-left bg-[#FAF9F5] hover:bg-[#F3F0E8] transition-colors flex items-center justify-between gap-4">
+                <span class="font-serif text-base sm:text-lg font-bold text-[#0E233E]">{{ faq_parts[0] }}</span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-tm-faq-icon
+                  class="w-4 h-4 text-[#0E233E] shrink-0 transition-transform duration-200 {% if forloop.first %}rotate-180 text-[#C5222A]{% endif %}" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg>
+              </button>
+              <div data-tm-faq-a class="p-4 sm:p-5 bg-white text-xs sm:text-sm text-[#475569] leading-relaxed border-t border-[#E8E4DA]" {% unless forloop.first %}hidden{% endunless %}>{{ faq_parts[1] | strip | escape | newline_to_br }}</div>
+            </div>
+          {%- endfor -%}
+        {%- endif -%}
+      </div>
+
+      <!-- Show More Button -->
+      <div class="mt-10 sm:mt-12 flex justify-center">
+        <a href="{{ section.settings.more_link | default: '/pages/faq' }}"
+          class="group inline-flex items-center justify-center gap-2.5 px-8 py-3.5 bg-[#0E233E] hover:bg-[#163359] text-white text-xs sm:text-sm font-semibold tracking-wider uppercase transition-all duration-200 shadow-sm hover:shadow">
+          <span>Show More</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 transition-transform group-hover:translate-x-1" aria-hidden="true"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+        </a>
+      </div>
+    </div>
+  </section>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  function initRoot(root) {
+    if (root.getAttribute('data-tm-init') === '1') return;
+    root.setAttribute('data-tm-init', '1');
+
+    /* Accordion: one item open at a time, like FaqSection.tsx */
+    root.querySelectorAll('[data-tm-faq-q]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var item = btn.closest('[data-tm-faq-item]');
+        if (!item) return;
+        var answer = item.querySelector('[data-tm-faq-a]');
+        var icon = item.querySelector('[data-tm-faq-icon]');
+        var willOpen = answer.hidden;
+        root.querySelectorAll('[data-tm-faq-item]').forEach(function (other) {
+          other.querySelector('[data-tm-faq-a]').hidden = true;
+          var otherIcon = other.querySelector('[data-tm-faq-icon]');
+          if (otherIcon) otherIcon.classList.remove('rotate-180', 'text-[#C5222A]');
+        });
+        if (willOpen) {
+          answer.hidden = false;
+          if (icon) icon.classList.add('rotate-180', 'text-[#C5222A]');
+        }
+      });
+    });
+  }
+
+  function initAll() {
+    Array.prototype.forEach.call(document.querySelectorAll('[data-tm-faq]'), initRoot);
+  }
+
+  document.addEventListener('shopify:section:load', function (e) {
+    var root = document.getElementById('TmFaq-' + e.detail.sectionId);
+    if (root) initRoot(root);
+  });
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initAll);
+  } else {
+    initAll();
+  }
+})();
+</script>
+
+{% schema %}
+{
+  "name": "Trophy Mart FAQ",
+  "settings": [
+    {
+      "type": "url",
+      "id": "more_link",
+      "label": "\"Show More\" link"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "faq",
+      "name": "FAQ",
+      "settings": [
+        {
+          "type": "text",
+          "id": "question",
+          "label": "Question",
+          "default": "Frequently asked question"
+        },
+        {
+          "type": "textarea",
+          "id": "answer",
+          "label": "Answer",
+          "default": "Write the answer here."
+        }
+      ]
+    }
+  ],
+  "max_blocks": 12,
+  "presets": [
+    {
+      "name": "Trophy Mart FAQ"
+    }
+  ]
+}
+{% endschema %}

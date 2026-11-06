@@ -56,6 +56,16 @@ export const TestimonialsCustomisationSection: React.FC<TestimonialsCustomisatio
       />
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Vertical divider between the two cards (desktop) */}
+        <div
+          aria-hidden="true"
+          className="hidden lg:flex absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-[85%] w-px flex-col items-center justify-center"
+        >
+          <span className="flex-1 w-px bg-gradient-to-b from-transparent via-white/20 to-[#DFB967]/25" />
+          <span className="my-4 block h-2 w-2 rotate-45 bg-[#DFB967]/90 shrink-0" />
+          <span className="flex-1 w-px bg-gradient-to-t from-transparent via-white/20 to-[#DFB967]/25" />
+        </div>
+
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-stretch">
 
           {/* Left Column: Testimonials Carousel */}
@@ -113,12 +123,19 @@ export const TestimonialsCustomisationSection: React.FC<TestimonialsCustomisatio
             </div>
           </div>
 
+          {/* Horizontal divider between the cards (mobile / tablet) */}
+          <div aria-hidden="true" className="lg:hidden flex items-center gap-3">
+            <span className="h-px flex-1 bg-gradient-to-r from-transparent via-white/20 to-[#DFB967]/25" />
+            <span className="h-2 w-2 rotate-45 bg-[#DFB967]/90 shrink-0" />
+            <span className="h-px flex-1 bg-gradient-to-r from-[#DFB967]/25 via-white/20 to-transparent" />
+          </div>
+
           {/* Right Column: Bespoke Customisation Card */}
           <div className="flex flex-col h-full">
-            {/* Title block mirrors the left column so both cards top-align — only needed at lg+ */}
-            <h2 className="hidden lg:block font-serif text-3xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-white opacity-0 pointer-events-none select-none">
-              Reflections of{' '}
-              <span className="italic text-[#DFB967]">our craftsmanship.</span>
+            <h2 className="font-serif text-3xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-white">
+              Want to customise
+              <br />
+              <span className="italic text-[#DFB967]">your own trophy?</span>
             </h2>
 
             <div className={`${CARD_CLASSES} mt-6 sm:mt-10 items-center text-center`}>
@@ -127,13 +144,8 @@ export const TestimonialsCustomisationSection: React.FC<TestimonialsCustomisatio
                 className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#DFB967]/80 to-transparent"
               />
 
-              <div>
-                <h3 className="font-serif text-2xl sm:text-4xl lg:text-5xl font-bold text-white leading-tight sm:leading-[1.05] tracking-tight">
-                  Want to customise
-                  <span className="block italic text-[#DFB967]">your own trophy?</span>
-                </h3>
-
-                <p className="mt-4 sm:mt-5 max-w-md text-xs sm:text-base text-white/65 leading-relaxed mx-auto">
+              <div className="my-auto">
+                <p className="max-w-md text-sm sm:text-base text-white/65 leading-relaxed mx-auto">
                   Work directly with our master craftspeople to shape an award that is
                   entirely, unmistakably yours — from first sketch to final polish.
                 </p>
