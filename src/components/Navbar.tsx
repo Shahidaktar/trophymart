@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Search, ChevronDown, Menu, X, ArrowRight, ShoppingBag, User, Home, Compass, Info, Mail, ChevronRight, ChevronLeft } from 'lucide-react';
 
 interface MenuItem {
@@ -38,6 +39,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   const [activeBottomNav, setActiveBottomNav] = useState<'home' | 'explore' | 'about' | 'contact'>('home');
   const [searchPhraseIndex, setSearchPhraseIndex] = useState(0);
   const [isFading, setIsFading] = useState(false);
+  const navigate = useNavigate();
 
   const searchPhrases = [
     'Search trophies...',
@@ -112,12 +114,17 @@ export const Navbar: React.FC<NavbarProps> = ({
 
   const scrollToAbout = (e: React.MouseEvent) => {
     e.preventDefault();
-    const elem = document.getElementById('about') || document.getElementById('craftsmanship');
-    if (elem) {
-      elem.scrollIntoView({ behavior: 'smooth' });
-    }
     setMobileMenuOpen(false);
     closeExploreDrawer();
+    navigate('/about');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const goToContact = () => {
+    setMobileMenuOpen(false);
+    closeExploreDrawer();
+    navigate('/contact');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleCategoryClick = (category: string) => {
@@ -480,7 +487,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 
           {/* About */}
           <a
-            href="#craftsmanship"
+            href="/about"
             onClick={scrollToAbout}
             className="hover:text-[#C5222A] transition-colors hover:underline underline-offset-8 decoration-[#C5222A] whitespace-nowrap"
           >
@@ -489,7 +496,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 
           {/* Contact Us */}
           <button
-            onClick={onOpenContact}
+            onClick={goToContact}
             className="hover:text-[#C5222A] transition-colors hover:underline underline-offset-8 decoration-[#C5222A] whitespace-nowrap focus:outline-none"
           >
             Contact Us
@@ -646,10 +653,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 About
               </button>
               <button
-                onClick={() => {
-                  setMobileMenuOpen(false);
-                  onOpenContact();
-                }}
+                onClick={goToContact}
                 className="block w-full text-left font-serif text-2xl font-semibold hover:text-amber-300 transition-colors"
               >
                 Contact Us
@@ -965,7 +969,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           <button
             onClick={() => {
               setActiveBottomNav('contact');
-              onOpenContact();
+              goToContact();
             }}
             className={`flex flex-col items-center justify-center gap-1 py-1 transition-colors focus:outline-none ${
               activeBottomNav === 'contact' && !isExploreOpen

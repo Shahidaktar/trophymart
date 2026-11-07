@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Phone, Mail, MapPin, Sparkles, ArrowRight } from 'lucide-react';
 
 interface FooterProps {
@@ -12,6 +13,7 @@ export const Footer: React.FC<FooterProps> = ({
   onOpenCustomizer,
   onOpenQuoteModal
 }) => {
+  const navigate = useNavigate();
   const panIndiaHubs = [
     'Mumbai', 'New Delhi', 'Bengaluru', 'Hyderabad', 'Ahmedabad',
     'Chennai', 'Kolkata', 'Pune', 'Jaipur', 'Lucknow', 'Chandigarh',
@@ -131,12 +133,7 @@ Shop by Type
               </li>
               <li>
                 <button
-                  onClick={() => {
-                    const about =
-                      document.getElementById('about') ||
-                      document.getElementById('craftsmanship');
-                    about?.scrollIntoView({ behavior: 'smooth' });
-                  }}
+                  onClick={() => navigate('/about')}
                   className="hover:text-[#C5222A] transition-colors"
                 >
                   About
@@ -152,7 +149,7 @@ Shop by Type
               </li>
               <li>
                 <button
-                  onClick={onOpenQuoteModal}
+                  onClick={() => navigate('/contact')}
                   className="hover:text-[#C5222A] transition-colors"
                 >
                   Contact
